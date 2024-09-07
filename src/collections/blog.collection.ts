@@ -1,5 +1,13 @@
+import { CodeBlock } from '@/feature/code'
 import { formatSlug } from '@/utils/formatSlug'
-import { HTMLConverterFeature, lexicalEditor, lexicalHTML } from '@payloadcms/richtext-lexical'
+import {
+  BlocksFeature,
+  EXPERIMENTAL_TableFeature,
+  FixedToolbarFeature,
+  HTMLConverterFeature,
+  lexicalEditor,
+  lexicalHTML,
+} from '@payloadcms/richtext-lexical'
 import { CollectionConfig } from 'payload'
 
 export const BlogCollection: CollectionConfig = {
@@ -46,11 +54,26 @@ export const BlogCollection: CollectionConfig = {
       type: 'textarea',
       required: true,
     },
+    // {
+    //   name: 'content',
+    //   type: 'richText',
+    //   editor: lexicalEditor({
+    //     features: ({ defaultFeatures }) => [...defaultFeatures, HTMLConverterFeature({})],
+    //   }),
+    // },
     {
       name: 'content',
       type: 'richText',
       editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [...defaultFeatures, HTMLConverterFeature({})],
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          EXPERIMENTAL_TableFeature(),
+          FixedToolbarFeature(),
+          BlocksFeature({
+            blocks: [CodeBlock],
+          }),
+          HTMLConverterFeature({}),
+        ],
       }),
     },
     lexicalHTML('content', { name: 'content_html' }),
