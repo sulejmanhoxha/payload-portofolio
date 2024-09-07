@@ -2,7 +2,6 @@ import { RichTextCell as RichTextCell_0 } from '@payloadcms/richtext-lexical/cli
 import { RichTextField as RichTextField_1 } from '@payloadcms/richtext-lexical/client'
 import { getGenerateComponentMap as getGenerateComponentMap_2 } from '@payloadcms/richtext-lexical/generateComponentMap'
 import { BlocksFeatureClient as BlocksFeatureClient_3 } from '@payloadcms/richtext-lexical/client'
-import { Code as Code_4 } from '/CodeFields.js'
 import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_5 } from '@payloadcms/richtext-lexical/client'
 import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_6 } from '@payloadcms/richtext-lexical/client'
 import { UploadFeatureClient as UploadFeatureClient_7 } from '@payloadcms/richtext-lexical/client'
@@ -25,29 +24,29 @@ import { BoldFeatureClient as BoldFeatureClient_23 } from '@payloadcms/richtext-
 import { ItalicFeatureClient as ItalicFeatureClient_24 } from '@payloadcms/richtext-lexical/client'
 
 export const importMap = {
-  "@payloadcms/richtext-lexical/client#RichTextCell": RichTextCell_0,
-  "@payloadcms/richtext-lexical/client#RichTextField": RichTextField_1,
-  "@payloadcms/richtext-lexical/generateComponentMap#getGenerateComponentMap": getGenerateComponentMap_2,
-  "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_3,
-  "./CodeFields.js#Code": Code_4,
-  "@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient": InlineToolbarFeatureClient_5,
-  "@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient": HorizontalRuleFeatureClient_6,
-  "@payloadcms/richtext-lexical/client#UploadFeatureClient": UploadFeatureClient_7,
-  "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_8,
-  "@payloadcms/richtext-lexical/client#RelationshipFeatureClient": RelationshipFeatureClient_9,
-  "@payloadcms/richtext-lexical/client#LinkFeatureClient": LinkFeatureClient_10,
-  "@payloadcms/richtext-lexical/client#ChecklistFeatureClient": ChecklistFeatureClient_11,
-  "@payloadcms/richtext-lexical/client#OrderedListFeatureClient": OrderedListFeatureClient_12,
-  "@payloadcms/richtext-lexical/client#UnorderedListFeatureClient": UnorderedListFeatureClient_13,
-  "@payloadcms/richtext-lexical/client#IndentFeatureClient": IndentFeatureClient_14,
-  "@payloadcms/richtext-lexical/client#AlignFeatureClient": AlignFeatureClient_15,
-  "@payloadcms/richtext-lexical/client#HeadingFeatureClient": HeadingFeatureClient_16,
-  "@payloadcms/richtext-lexical/client#ParagraphFeatureClient": ParagraphFeatureClient_17,
-  "@payloadcms/richtext-lexical/client#InlineCodeFeatureClient": InlineCodeFeatureClient_18,
-  "@payloadcms/richtext-lexical/client#SuperscriptFeatureClient": SuperscriptFeatureClient_19,
-  "@payloadcms/richtext-lexical/client#SubscriptFeatureClient": SubscriptFeatureClient_20,
-  "@payloadcms/richtext-lexical/client#StrikethroughFeatureClient": StrikethroughFeatureClient_21,
-  "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_22,
-  "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_23,
-  "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_24
+  '@payloadcms/richtext-lexical/client#RichTextCell': RichTextCell_0,
+  '@payloadcms/richtext-lexical/client#RichTextField': RichTextField_1,
+  '@payloadcms/richtext-lexical/generateComponentMap#getGenerateComponentMap':
+    getGenerateComponentMap_2,
+  '@payloadcms/richtext-lexical/client#BlocksFeatureClient': BlocksFeatureClient_3,
+  '@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient': InlineToolbarFeatureClient_5,
+  '@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient': HorizontalRuleFeatureClient_6,
+  '@payloadcms/richtext-lexical/client#UploadFeatureClient': UploadFeatureClient_7,
+  '@payloadcms/richtext-lexical/client#BlockquoteFeatureClient': BlockquoteFeatureClient_8,
+  '@payloadcms/richtext-lexical/client#RelationshipFeatureClient': RelationshipFeatureClient_9,
+  '@payloadcms/richtext-lexical/client#LinkFeatureClient': LinkFeatureClient_10,
+  '@payloadcms/richtext-lexical/client#ChecklistFeatureClient': ChecklistFeatureClient_11,
+  '@payloadcms/richtext-lexical/client#OrderedListFeatureClient': OrderedListFeatureClient_12,
+  '@payloadcms/richtext-lexical/client#UnorderedListFeatureClient': UnorderedListFeatureClient_13,
+  '@payloadcms/richtext-lexical/client#IndentFeatureClient': IndentFeatureClient_14,
+  '@payloadcms/richtext-lexical/client#AlignFeatureClient': AlignFeatureClient_15,
+  '@payloadcms/richtext-lexical/client#HeadingFeatureClient': HeadingFeatureClient_16,
+  '@payloadcms/richtext-lexical/client#ParagraphFeatureClient': ParagraphFeatureClient_17,
+  '@payloadcms/richtext-lexical/client#InlineCodeFeatureClient': InlineCodeFeatureClient_18,
+  '@payloadcms/richtext-lexical/client#SuperscriptFeatureClient': SuperscriptFeatureClient_19,
+  '@payloadcms/richtext-lexical/client#SubscriptFeatureClient': SubscriptFeatureClient_20,
+  '@payloadcms/richtext-lexical/client#StrikethroughFeatureClient': StrikethroughFeatureClient_21,
+  '@payloadcms/richtext-lexical/client#UnderlineFeatureClient': UnderlineFeatureClient_22,
+  '@payloadcms/richtext-lexical/client#BoldFeatureClient': BoldFeatureClient_23,
+  '@payloadcms/richtext-lexical/client#ItalicFeatureClient': ItalicFeatureClient_24,
 }
