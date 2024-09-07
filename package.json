@@ -1,0 +1,74 @@
+{
+  "name": "payload-3.0-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "cross-env NODE_OPTIONS=\"${NODE_OPTIONS} --no-deprecation\" next dev",
+    "devturbo": "pnpm dev --turbo",
+    "devturbosafe": "rm -rf .next && pnpm dev --turbo",
+    "devsafe": "rm -rf .next && pnpm dev",
+    "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
+    "ci": "payload migrate && pnpm build",
+    "payload": "payload",
+    "generate:types": "payload generate:types",
+    "generate:schema": "payload-graphql generate:schema",
+    "standalone-script": "payload run ./src/scripts/standalone-script.ts",
+    "generate:importmap": "payload generate:importmap"
+  },
+  "engines": {
+    "node": "^18.20.2 || >=20.9.0"
+  },
+  "dependencies": {
+    "@payloadcms/db-mongodb": "3.0.0-beta.90",
+    "@payloadcms/db-postgres": "3.0.0-beta.90",
+    "@payloadcms/next": "3.0.0-beta.90",
+    "@payloadcms/richtext-lexical": "3.0.0-beta.90",
+    "@payloadcms/richtext-slate": "3.0.0-beta.90",
+    "@payloadcms/ui": "3.0.0-beta.90",
+    "babel-plugin-react-compiler": "0.0.0-experimental-48eb8f4-20240822",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "cross-env": "^7.0.3",
+    "dompurify": "^3.1.6",
+    "framer-motion": "^11.3.31",
+    "graphql": "^16.8.2",
+    "gray-matter": "^4.0.3",
+    "lucide-react": "^0.438.0",
+    "next": "15.0.0-canary.104",
+    "next-mdx-remote": "^5.0.0",
+    "next-themes": "^0.3.0",
+    "payload": "3.0.0-beta.90",
+    "react": "19.0.0-rc-06d0b89e-20240801",
+    "react-dom": "19.0.0-rc-06d0b89e-20240801",
+    "sharp": "0.32.6",
+    "sugar-high": "^0.7.0",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@payloadcms/graphql": "3.0.0-beta.90",
+    "@tailwindcss/typography": "^0.5.15",
+    "@types/node": "^20.14.9",
+    "@types/react": "npm:types-react@19.0.0-rc.0",
+    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "15.0.0-canary.104",
+    "postcss": "^8.4.44",
+    "tailwindcss": "^3.4.10",
+    "typescript": "5.5.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "npm:types-react@19.0.0-rc.0",
+      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.0"
+    }
+  },
+  "overrides": {
+    "@types/react": "npm:types-react@19.0.0-rc.0",
+    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.0"
+  }
+}
