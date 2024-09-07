@@ -12,7 +12,7 @@ export const languages = {
 export const CodeBlock: Block = {
   slug: 'Code',
   admin: {
-    jsx: '@/feature/converterClient.js#codeConverterClient',
+    jsx: './converterClient.js#codeConverterClient',
   },
   jsx: codeConverter,
   fields: [
@@ -28,7 +28,7 @@ export const CodeBlock: Block = {
     {
       admin: {
         components: {
-          Field: './collections/Posts/CodeFields.js#Code',
+          Field: './CodeFields.js#Code',
         },
       },
       name: 'code',
