@@ -1,9 +1,9 @@
-import me from "@/assets/me.jpg";
-import Image from "next/image";
+import me from '@/assets/me.jpg'
+import Image from 'next/image'
 
-import { Instagram, Github, Linkedin, Phone, Mail } from "lucide-react";
-import ThemeToggle from "./ThemeToggle";
-import { ArrowDownToLine } from "lucide-react";
+import { Instagram, Github, Linkedin, Phone, Mail } from 'lucide-react'
+import ThemeToggle from './ThemeToggle'
+import { ArrowDownToLine } from 'lucide-react'
 
 export default function Header() {
   return (
@@ -19,9 +19,7 @@ export default function Header() {
           />
         </div>
         <h1 className="text-xl font-semibold">Sulejman Hoxha</h1>
-        <h2 className="mb-3 mt-1 text-lg text-muted/75">
-          Full-stack developer
-        </h2>
+        <h2 className="mb-3 mt-1 text-lg text-muted/75">Full-stack developer</h2>
         <h2 className="flex items-center gap-2 text-muted/75">
           <Mail className="size-5" />
           sulejman.hoxha.dev@gmail.com
@@ -62,9 +60,7 @@ export default function Header() {
 
       <Divider />
     </>
-  );
+  )
 }
 
-const Divider = () => (
-  <div className="my-8 w-full rounded-full border border-muted/15"></div>
-);
+const Divider = () => <div className="my-8 w-full rounded-full border border-muted/15"></div>

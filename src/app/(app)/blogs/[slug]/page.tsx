@@ -79,7 +79,7 @@ export default async function BlogViewPage({ params }: { params: { slug: string 
       /> */}
 
       <div
-        className="prose prose-base prose-slate mt-16 max-w-none dark:prose-invert"
+        className="prose prose-base prose-slate dark:prose-invert mt-16 max-w-none"
         dangerouslySetInnerHTML={{ __html: content }}
       />
     </section>

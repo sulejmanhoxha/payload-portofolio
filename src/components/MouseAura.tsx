@@ -1,23 +1,23 @@
-"use client";
+'use client'
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react'
 
 export default function MouseAura() {
-  const auraRef = useRef<HTMLDivElement>(null);
+  const auraRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const updateAuraPosition = (e: MouseEvent) => {
       if (auraRef.current) {
-        auraRef.current.style.setProperty("--mouse-x", `${e.clientX}px`);
-        auraRef.current.style.setProperty("--mouse-y", `${e.clientY}px`);
+        auraRef.current.style.setProperty('--mouse-x', `${e.clientX}px`)
+        auraRef.current.style.setProperty('--mouse-y', `${e.clientY}px`)
       }
-    };
-    window.addEventListener("pointermove", updateAuraPosition);
+    }
+    window.addEventListener('pointermove', updateAuraPosition)
 
     return () => {
-      window.removeEventListener("pointermove", updateAuraPosition);
-    };
-  }, []);
+      window.removeEventListener('pointermove', updateAuraPosition)
+    }
+  }, [])
 
-  return <div ref={auraRef} className="mouse-aura" />;
+  return <div ref={auraRef} className="mouse-aura" />
 }

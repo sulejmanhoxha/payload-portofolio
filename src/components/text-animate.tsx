@@ -1,28 +1,23 @@
-"use client";
+'use client'
 
-import { FC, useEffect, useRef } from "react";
-import {
-  HTMLMotionProps,
-  motion,
-  useAnimation,
-  useInView,
-} from "framer-motion";
+import { FC, useEffect, useRef } from 'react'
+import { HTMLMotionProps, motion, useAnimation, useInView } from 'framer-motion'
 
 type AnimationType =
-  | "fadeIn"
-  | "fadeInUp"
-  | "popIn"
-  | "shiftInUp"
-  | "rollIn"
-  | "whipIn"
-  | "whipInUp"
-  | "calmInUp";
+  | 'fadeIn'
+  | 'fadeInUp'
+  | 'popIn'
+  | 'shiftInUp'
+  | 'rollIn'
+  | 'whipIn'
+  | 'whipInUp'
+  | 'calmInUp'
 
-interface Props extends HTMLMotionProps<"div"> {
-  text: string;
-  type?: AnimationType;
-  delay?: number;
-  duration?: number;
+interface Props extends HTMLMotionProps<'div'> {
+  text: string
+  type?: AnimationType
+  delay?: number
+  duration?: number
 }
 
 const animationVariants = {
@@ -39,7 +34,7 @@ const animationVariants = {
         opacity: 1,
         y: [0, -10, 0],
         transition: {
-          type: "spring",
+          type: 'spring',
           damping: 12,
           stiffness: 100,
         },
@@ -72,7 +67,7 @@ const animationVariants = {
       visible: {
         opacity: 1,
         scale: 1.1,
-        transition: { type: "spring", damping: 15, stiffness: 400 },
+        transition: { type: 'spring', damping: 15, stiffness: 400 },
       },
       hidden: { opacity: 0, scale: 0 },
     },
@@ -86,7 +81,7 @@ const animationVariants = {
     },
     child: {
       hidden: {
-        y: "200%",
+        y: '200%',
         transition: { ease: [0.455, 0.03, 0.515, 0.955], duration: 0.85 },
       },
       visible: {
@@ -111,7 +106,7 @@ const animationVariants = {
     },
     child: {
       hidden: {
-        y: "100%", // Starting from below but not too far to ensure a dramatic but manageable shift.
+        y: '100%', // Starting from below but not too far to ensure a dramatic but manageable shift.
         transition: {
           ease: [0.75, 0, 0.25, 1], // Starting quickly
           duration: 0.6, // Shortened duration for a more dramatic start
@@ -136,7 +131,7 @@ const animationVariants = {
     },
     child: {
       hidden: {
-        y: "200%",
+        y: '200%',
         transition: { ease: [0.455, 0.03, 0.515, 0.955], duration: 0.45 },
       },
       visible: {
@@ -194,25 +189,21 @@ const animationVariants = {
       },
     },
   },
-};
+}
 
-const TextAnimate: FC<Props> = ({
-  text,
-  type = "whipInUp",
-  ...props
-}: Props) => {
+const TextAnimate: FC<Props> = ({ text, type = 'whipInUp', ...props }: Props) => {
   //   const { ref, inView } = useInView({
   //     threshold: 0.5,
   //     triggerOnce: true,
   //   });
 
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true })
 
-  const letters = Array.from(text);
-  const { container, child } = animationVariants[type];
+  const letters = Array.from(text)
+  const { container, child } = animationVariants[type]
 
-  const ctrls = useAnimation();
+  const ctrls = useAnimation()
 
   //   useEffect(() => {
   //     if (isInView) {
@@ -223,10 +214,10 @@ const TextAnimate: FC<Props> = ({
   //     }
   //   }, [ctrls, isInView]);
 
-  if (type === "rollIn" || type === "whipIn") {
+  if (type === 'rollIn' || type === 'whipIn') {
     return (
       <h2 className="mt-10 px-8 py-5 pb-8 text-3xl font-black text-black dark:text-neutral-100 md:text-5xl">
-        {text.split(" ").map((word, index) => {
+        {text.split(' ').map((word, index) => {
           return (
             <motion.span
               ref={ref}
@@ -243,7 +234,7 @@ const TextAnimate: FC<Props> = ({
                 // staggerChildren: 0.05,
               }}
             >
-              {word.split("").map((character, index) => {
+              {word.split('').map((character, index) => {
                 return (
                   <motion.span
                     aria-hidden="true"
@@ -253,18 +244,18 @@ const TextAnimate: FC<Props> = ({
                   >
                     {character}
                   </motion.span>
-                );
+                )
               })}
             </motion.span>
-          );
+          )
         })}
       </h2>
-    );
+    )
   }
 
   return (
     <motion.h2
-      style={{ display: "flex", overflow: "hidden" }}
+      style={{ display: 'flex', overflow: 'hidden' }}
       role="heading"
       variants={container}
       initial="hidden"
@@ -274,11 +265,11 @@ const TextAnimate: FC<Props> = ({
     >
       {letters.map((letter, index) => (
         <motion.span key={index} variants={child}>
-          {letter === " " ? "\u00A0" : letter}
+          {letter === ' ' ? '\u00A0' : letter}
         </motion.span>
       ))}
     </motion.h2>
-  );
-};
+  )
+}
 
-export { TextAnimate };
+export { TextAnimate }

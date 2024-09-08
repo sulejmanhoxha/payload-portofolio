@@ -1,4 +1,4 @@
-import { BookOpenText } from "lucide-react";
+import { BookOpenText } from 'lucide-react'
 
 export default function EducationSection() {
   return (
@@ -7,9 +7,7 @@ export default function EducationSection() {
       <div className="flex items-center gap-4">
         <BookOpenText className="size-6 text-muted/75" />
         <div>
-          <p className="text-base font-medium">
-            Bachelors in Information Systems and Technology
-          </p>
+          <p className="text-base font-medium">Bachelors in Information Systems and Technology</p>
           <p className="text-sm text-muted/75">University of Donja Gorica</p>
           {/* <a
           href="#"
@@ -20,5 +18,5 @@ export default function EducationSection() {
         </div>
       </div>
     </section>
-  );
+  )
 }

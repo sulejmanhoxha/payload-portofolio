@@ -23,7 +23,7 @@ export default async function BlogViewPage({ params }: { params: { id: string } 
 
   return (
     <section>
-      <main className="prose prose-base prose-slate mt-16 max-w-none dark:prose-invert">
+      <main className="prose prose-base prose-slate dark:prose-invert mt-16 max-w-none">
         {content}
       </main>
     </section>

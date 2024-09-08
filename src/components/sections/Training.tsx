@@ -1,31 +1,31 @@
 const training = [
   {
-    title: "Development of backend web applications with Django",
-    date: "Nov 2022 — Aug 2023",
-    institution: "DevelopersLab",
+    title: 'Development of backend web applications with Django',
+    date: 'Nov 2022 — Aug 2023',
+    institution: 'DevelopersLab',
   },
   {
-    title: "Basics of web development with React",
-    date: "Jan 2023 — Aug 2023",
-    institution: "ICT Cortex Academia",
+    title: 'Basics of web development with React',
+    date: 'Jan 2023 — Aug 2023',
+    institution: 'ICT Cortex Academia',
   },
   {
-    title: "FrontEnd Web Development with React",
-    date: "Feb 2024 — Present",
-    institution: "DevelopersLab",
+    title: 'FrontEnd Web Development with React',
+    date: 'Feb 2024 — Present',
+    institution: 'DevelopersLab',
   },
   {
-    title: "Backend Web development with NodeJS",
-    date: "Feb 2024 — Present",
-    institution: "ICT Cortex Academia",
+    title: 'Backend Web development with NodeJS',
+    date: 'Feb 2024 — Present',
+    institution: 'ICT Cortex Academia',
   },
-];
+]
 
 type Training = {
-  title: string;
-  date: string;
-  institution: string;
-};
+  title: string
+  date: string
+  institution: string
+}
 export default function TrainingSection() {
   return (
     <section className="my-16">
@@ -36,7 +36,7 @@ export default function TrainingSection() {
         ))}
       </ol>
     </section>
-  );
+  )
 }
 
 const TrainingItem = ({ training }: { training: Training }) => {
@@ -45,9 +45,7 @@ const TrainingItem = ({ training }: { training: Training }) => {
       <div className="absolute -start-1.5 mt-1.5 h-3 w-3 rounded-full border border-border bg-primary" />
       <div className="font-medium text-foreground">{training.title}</div>
       <div className="text-sm font-normal text-muted/75">{training.date}</div>
-      <div className="mb-4 text-sm font-normal text-muted/75">
-        {training.institution}
-      </div>
+      <div className="mb-4 text-sm font-normal text-muted/75">{training.institution}</div>
     </li>
-  );
-};
+  )
+}
