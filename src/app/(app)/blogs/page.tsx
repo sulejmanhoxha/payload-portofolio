@@ -26,25 +26,6 @@ export default async function BlogsPage() {
           id={blog.slug}
         />
       ))}
-
-      <BlogCard
-        title="How to Build a Personal Website with Next.js"
-        date="February 1, 2023"
-        description="In this blog post, we will learn how to build a personal website using Next.js and Tailwind CSS."
-        id="1"
-      />
-      <BlogCard
-        title="How to Build a Personal Website with Next.js"
-        date="February 1, 2023"
-        description="In this blog post, we will learn how to build a personal website using Next.js and Tailwind CSS."
-        id="2"
-      />
-      <BlogCard
-        title="Build a Personal Website with Next.js and Tailwind CSS"
-        date="February 1, 2023"
-        description="Learn how to build a personal website using Next.js and Tailwind CSS."
-        id="3"
-      />
     </div>
   )
 }

@@ -1,4 +1,5 @@
-import { CodeBlock } from '@/feature/code'
+// import { CodeBlock } from '@/feature/code'
+import { Code } from '@/blocks/Code/config'
 import { formatSlug } from '@/utils/formatSlug'
 import {
   BlocksFeature,
@@ -20,6 +21,7 @@ export const BlogCollection: CollectionConfig = {
       name: 'slug',
       label: 'Slug',
       type: 'text',
+      required: true,
       admin: {
         position: 'sidebar',
       },
@@ -70,7 +72,7 @@ export const BlogCollection: CollectionConfig = {
           EXPERIMENTAL_TableFeature(),
           FixedToolbarFeature(),
           BlocksFeature({
-            blocks: [CodeBlock],
+            blocks: [Code],
           }),
           HTMLConverterFeature({}),
         ],

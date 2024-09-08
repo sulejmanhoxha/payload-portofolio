@@ -3,6 +3,51 @@ import { notFound } from 'next/navigation'
 import config from '@payload-config'
 // import DOMPurify from 'dompurify'
 
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const { slug } = params
+
+  const payload = await getPayloadHMR({
+    config,
+  })
+
+  const data = await payload.find({
+    collection: 'blogs',
+    where: {
+      slug: { equals: slug }, // Updated to match expected type
+    },
+  })
+
+  if (!data) {
+    notFound()
+  }
+
+  const title = data.docs[0].title
+  const description = data.docs[0].summary
+
+  return {
+    title,
+    description,
+  }
+}
+
+export async function generateStaticParams() {
+  const payload = await getPayloadHMR({
+    config,
+  })
+
+  const data = await payload.find({
+    collection: 'blogs',
+  })
+
+  if (!data) {
+    return []
+  }
+
+  return data.docs.map((blog) => ({
+    slug: blog.slug,
+  }))
+}
+
 export default async function BlogViewPage({ params }: { params: { slug: string } }) {
   const { slug } = params
 
