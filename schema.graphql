@@ -1,14 +1,18 @@
 type Query {
+  Blog(id: String!, draft: Boolean): Blog
+  Blogs(draft: Boolean, where: Blog_where, limit: Int, page: Int, sort: String): Blogs
+  countBlogs(draft: Boolean, where: Blog_where): countBlogs
+  docAccessBlog(id: String!): blogsDocAccess
   User(id: String!, draft: Boolean): User
   Users(draft: Boolean, where: User_where, limit: Int, page: Int, sort: String): Users
   countUsers(draft: Boolean, where: User_where): countUsers
   docAccessUser(id: String!): usersDocAccess
   meUser: usersMe
   initializedUser: Boolean
-  Page(id: String!, draft: Boolean): Page
-  Pages(draft: Boolean, where: Page_where, limit: Int, page: Int, sort: String): Pages
-  countPages(draft: Boolean, where: Page_where): countPages
-  docAccessPage(id: String!): pagesDocAccess
+  Project(id: String!, draft: Boolean): Project
+  Projects(draft: Boolean, where: Project_where, limit: Int, page: Int, sort: String): Projects
+  countProjects(draft: Boolean, where: Project_where): countProjects
+  docAccessProject(id: String!): projectsDocAccess
   Media(id: String!, draft: Boolean): Media
   allMedia(draft: Boolean, where: Media_where, limit: Int, page: Int, sort: String): allMedia
   countallMedia(draft: Boolean, where: Media_where): countallMedia
@@ -26,6 +30,495 @@ type Query {
   Access: Access
 }
 
+type Blog {
+  id: String
+  slug: String!
+  title: String!
+  image: Media
+  author: String!
+  publishedAt: DateTime!
+  summary: String!
+  content(depth: Int): JSON
+  content_html: String
+  updatedAt: DateTime
+  createdAt: DateTime
+}
+
+type Media {
+  id: String
+  text: String
+  updatedAt: DateTime
+  createdAt: DateTime
+  url: String
+  thumbnailURL: String
+  filename: String
+  mimeType: String
+  filesize: Float
+  width: Float
+  height: Float
+  focalX: Float
+  focalY: Float
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+  @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+type Blogs {
+  docs: [Blog]
+  hasNextPage: Boolean
+  hasPrevPage: Boolean
+  limit: Int
+  nextPage: Int
+  offset: Int
+  page: Int
+  pagingCounter: Int
+  prevPage: Int
+  totalDocs: Int
+  totalPages: Int
+}
+
+input Blog_where {
+  slug: Blog_slug_operator
+  title: Blog_title_operator
+  image: Blog_image_operator
+  author: Blog_author_operator
+  publishedAt: Blog_publishedAt_operator
+  summary: Blog_summary_operator
+  content: Blog_content_operator
+  content_html: Blog_content_html_operator
+  updatedAt: Blog_updatedAt_operator
+  createdAt: Blog_createdAt_operator
+  id: Blog_id_operator
+  AND: [Blog_where_and]
+  OR: [Blog_where_or]
+}
+
+input Blog_slug_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+}
+
+input Blog_title_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+}
+
+input Blog_image_operator {
+  equals: JSON
+  not_equals: JSON
+  in: [JSON]
+  not_in: [JSON]
+  all: [JSON]
+  exists: Boolean
+}
+
+input Blog_author_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+}
+
+input Blog_publishedAt_operator {
+  equals: DateTime
+  not_equals: DateTime
+  greater_than_equal: DateTime
+  greater_than: DateTime
+  less_than_equal: DateTime
+  less_than: DateTime
+  like: DateTime
+}
+
+input Blog_summary_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+}
+
+input Blog_content_operator {
+  equals: JSON
+  not_equals: JSON
+  like: JSON
+  contains: JSON
+  exists: Boolean
+}
+
+input Blog_content_html_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  exists: Boolean
+}
+
+input Blog_updatedAt_operator {
+  equals: DateTime
+  not_equals: DateTime
+  greater_than_equal: DateTime
+  greater_than: DateTime
+  less_than_equal: DateTime
+  less_than: DateTime
+  like: DateTime
+  exists: Boolean
+}
+
+input Blog_createdAt_operator {
+  equals: DateTime
+  not_equals: DateTime
+  greater_than_equal: DateTime
+  greater_than: DateTime
+  less_than_equal: DateTime
+  less_than: DateTime
+  like: DateTime
+  exists: Boolean
+}
+
+input Blog_id_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+  exists: Boolean
+}
+
+input Blog_where_and {
+  slug: Blog_slug_operator
+  title: Blog_title_operator
+  image: Blog_image_operator
+  author: Blog_author_operator
+  publishedAt: Blog_publishedAt_operator
+  summary: Blog_summary_operator
+  content: Blog_content_operator
+  content_html: Blog_content_html_operator
+  updatedAt: Blog_updatedAt_operator
+  createdAt: Blog_createdAt_operator
+  id: Blog_id_operator
+  AND: [Blog_where_and]
+  OR: [Blog_where_or]
+}
+
+input Blog_where_or {
+  slug: Blog_slug_operator
+  title: Blog_title_operator
+  image: Blog_image_operator
+  author: Blog_author_operator
+  publishedAt: Blog_publishedAt_operator
+  summary: Blog_summary_operator
+  content: Blog_content_operator
+  content_html: Blog_content_html_operator
+  updatedAt: Blog_updatedAt_operator
+  createdAt: Blog_createdAt_operator
+  id: Blog_id_operator
+  AND: [Blog_where_and]
+  OR: [Blog_where_or]
+}
+
+type countBlogs {
+  totalDocs: Int
+}
+
+type blogsDocAccess {
+  fields: BlogsDocAccessFields
+  create: BlogsCreateDocAccess
+  read: BlogsReadDocAccess
+  update: BlogsUpdateDocAccess
+  delete: BlogsDeleteDocAccess
+}
+
+type BlogsDocAccessFields {
+  slug: BlogsDocAccessFields_slug
+  title: BlogsDocAccessFields_title
+  image: BlogsDocAccessFields_image
+  author: BlogsDocAccessFields_author
+  publishedAt: BlogsDocAccessFields_publishedAt
+  summary: BlogsDocAccessFields_summary
+  content: BlogsDocAccessFields_content
+  content_html: BlogsDocAccessFields_content_html
+  updatedAt: BlogsDocAccessFields_updatedAt
+  createdAt: BlogsDocAccessFields_createdAt
+}
+
+type BlogsDocAccessFields_slug {
+  create: BlogsDocAccessFields_slug_Create
+  read: BlogsDocAccessFields_slug_Read
+  update: BlogsDocAccessFields_slug_Update
+  delete: BlogsDocAccessFields_slug_Delete
+}
+
+type BlogsDocAccessFields_slug_Create {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_slug_Read {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_slug_Update {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_slug_Delete {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_title {
+  create: BlogsDocAccessFields_title_Create
+  read: BlogsDocAccessFields_title_Read
+  update: BlogsDocAccessFields_title_Update
+  delete: BlogsDocAccessFields_title_Delete
+}
+
+type BlogsDocAccessFields_title_Create {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_title_Read {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_title_Update {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_title_Delete {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_image {
+  create: BlogsDocAccessFields_image_Create
+  read: BlogsDocAccessFields_image_Read
+  update: BlogsDocAccessFields_image_Update
+  delete: BlogsDocAccessFields_image_Delete
+}
+
+type BlogsDocAccessFields_image_Create {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_image_Read {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_image_Update {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_image_Delete {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_author {
+  create: BlogsDocAccessFields_author_Create
+  read: BlogsDocAccessFields_author_Read
+  update: BlogsDocAccessFields_author_Update
+  delete: BlogsDocAccessFields_author_Delete
+}
+
+type BlogsDocAccessFields_author_Create {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_author_Read {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_author_Update {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_author_Delete {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_publishedAt {
+  create: BlogsDocAccessFields_publishedAt_Create
+  read: BlogsDocAccessFields_publishedAt_Read
+  update: BlogsDocAccessFields_publishedAt_Update
+  delete: BlogsDocAccessFields_publishedAt_Delete
+}
+
+type BlogsDocAccessFields_publishedAt_Create {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_publishedAt_Read {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_publishedAt_Update {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_publishedAt_Delete {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_summary {
+  create: BlogsDocAccessFields_summary_Create
+  read: BlogsDocAccessFields_summary_Read
+  update: BlogsDocAccessFields_summary_Update
+  delete: BlogsDocAccessFields_summary_Delete
+}
+
+type BlogsDocAccessFields_summary_Create {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_summary_Read {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_summary_Update {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_summary_Delete {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_content {
+  create: BlogsDocAccessFields_content_Create
+  read: BlogsDocAccessFields_content_Read
+  update: BlogsDocAccessFields_content_Update
+  delete: BlogsDocAccessFields_content_Delete
+}
+
+type BlogsDocAccessFields_content_Create {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_content_Read {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_content_Update {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_content_Delete {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_content_html {
+  create: BlogsDocAccessFields_content_html_Create
+  read: BlogsDocAccessFields_content_html_Read
+  update: BlogsDocAccessFields_content_html_Update
+  delete: BlogsDocAccessFields_content_html_Delete
+}
+
+type BlogsDocAccessFields_content_html_Create {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_content_html_Read {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_content_html_Update {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_content_html_Delete {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_updatedAt {
+  create: BlogsDocAccessFields_updatedAt_Create
+  read: BlogsDocAccessFields_updatedAt_Read
+  update: BlogsDocAccessFields_updatedAt_Update
+  delete: BlogsDocAccessFields_updatedAt_Delete
+}
+
+type BlogsDocAccessFields_updatedAt_Create {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_updatedAt_Read {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_updatedAt_Update {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_updatedAt_Delete {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_createdAt {
+  create: BlogsDocAccessFields_createdAt_Create
+  read: BlogsDocAccessFields_createdAt_Read
+  update: BlogsDocAccessFields_createdAt_Update
+  delete: BlogsDocAccessFields_createdAt_Delete
+}
+
+type BlogsDocAccessFields_createdAt_Create {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_createdAt_Read {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_createdAt_Update {
+  permission: Boolean!
+}
+
+type BlogsDocAccessFields_createdAt_Delete {
+  permission: Boolean!
+}
+
+type BlogsCreateDocAccess {
+  permission: Boolean!
+  where: JSONObject
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+  @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+type BlogsReadDocAccess {
+  permission: Boolean!
+  where: JSONObject
+}
+
+type BlogsUpdateDocAccess {
+  permission: Boolean!
+  where: JSONObject
+}
+
+type BlogsDeleteDocAccess {
+  permission: Boolean!
+  where: JSONObject
+}
+
 type User {
   id: String
   updatedAt: DateTime
@@ -39,11 +532,6 @@ type User {
   lockUntil: DateTime
   password: String!
 }
-
-"""
-A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
-"""
-scalar DateTime
 
 """
 A field whose value conforms to the standard internet email address format as specified in HTML Spec: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address.
@@ -252,12 +740,6 @@ type UsersCreateDocAccess {
   where: JSONObject
 }
 
-"""
-The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-"""
-scalar JSONObject
-  @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
-
 type UsersReadDocAccess {
   permission: Boolean!
   where: JSONObject
@@ -281,26 +763,33 @@ type UsersUnlockDocAccess {
 type usersMe {
   collection: String
   exp: Int
+  strategy: String
   token: String
   user: User
 }
 
-type Page {
+type Project {
   id: String
-  title: String
+  slug: String
+  name: String
+  image: Media!
+  technologies: [Project_Technologies!]!
+  description: String!
+  url: String
+  github: String
   content(depth: Int): JSON
+  content_html: String
   updatedAt: DateTime
   createdAt: DateTime
 }
 
-"""
-The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-"""
-scalar JSON
-  @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+type Project_Technologies {
+  name: String
+  id: String
+}
 
-type Pages {
-  docs: [Page]
+type Projects {
+  docs: [Project]
   hasNextPage: Boolean
   hasPrevPage: Boolean
   limit: Int
@@ -313,17 +802,25 @@ type Pages {
   totalPages: Int
 }
 
-input Page_where {
-  title: Page_title_operator
-  content: Page_content_operator
-  updatedAt: Page_updatedAt_operator
-  createdAt: Page_createdAt_operator
-  id: Page_id_operator
-  AND: [Page_where_and]
-  OR: [Page_where_or]
+input Project_where {
+  slug: Project_slug_operator
+  name: Project_name_operator
+  image: Project_image_operator
+  technologies__name: Project_technologies__name_operator
+  technologies__id: Project_technologies__id_operator
+  description: Project_description_operator
+  url: Project_url_operator
+  github: Project_github_operator
+  content: Project_content_operator
+  content_html: Project_content_html_operator
+  updatedAt: Project_updatedAt_operator
+  createdAt: Project_createdAt_operator
+  id: Project_id_operator
+  AND: [Project_where_and]
+  OR: [Project_where_or]
 }
 
-input Page_title_operator {
+input Project_slug_operator {
   equals: String
   not_equals: String
   like: String
@@ -334,7 +831,76 @@ input Page_title_operator {
   exists: Boolean
 }
 
-input Page_content_operator {
+input Project_name_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+  exists: Boolean
+}
+
+input Project_image_operator {
+  equals: JSON
+  not_equals: JSON
+  in: [JSON]
+  not_in: [JSON]
+  all: [JSON]
+}
+
+input Project_technologies__name_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+}
+
+input Project_technologies__id_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+  exists: Boolean
+}
+
+input Project_description_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+}
+
+input Project_url_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+  exists: Boolean
+}
+
+input Project_github_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+  exists: Boolean
+}
+
+input Project_content_operator {
   equals: JSON
   not_equals: JSON
   like: JSON
@@ -342,7 +908,15 @@ input Page_content_operator {
   exists: Boolean
 }
 
-input Page_updatedAt_operator {
+input Project_content_html_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  exists: Boolean
+}
+
+input Project_updatedAt_operator {
   equals: DateTime
   not_equals: DateTime
   greater_than_equal: DateTime
@@ -353,7 +927,7 @@ input Page_updatedAt_operator {
   exists: Boolean
 }
 
-input Page_createdAt_operator {
+input Project_createdAt_operator {
   equals: DateTime
   not_equals: DateTime
   greater_than_equal: DateTime
@@ -364,7 +938,7 @@ input Page_createdAt_operator {
   exists: Boolean
 }
 
-input Page_id_operator {
+input Project_id_operator {
   equals: String
   not_equals: String
   like: String
@@ -375,171 +949,391 @@ input Page_id_operator {
   exists: Boolean
 }
 
-input Page_where_and {
-  title: Page_title_operator
-  content: Page_content_operator
-  updatedAt: Page_updatedAt_operator
-  createdAt: Page_createdAt_operator
-  id: Page_id_operator
-  AND: [Page_where_and]
-  OR: [Page_where_or]
+input Project_where_and {
+  slug: Project_slug_operator
+  name: Project_name_operator
+  image: Project_image_operator
+  technologies__name: Project_technologies__name_operator
+  technologies__id: Project_technologies__id_operator
+  description: Project_description_operator
+  url: Project_url_operator
+  github: Project_github_operator
+  content: Project_content_operator
+  content_html: Project_content_html_operator
+  updatedAt: Project_updatedAt_operator
+  createdAt: Project_createdAt_operator
+  id: Project_id_operator
+  AND: [Project_where_and]
+  OR: [Project_where_or]
 }
 
-input Page_where_or {
-  title: Page_title_operator
-  content: Page_content_operator
-  updatedAt: Page_updatedAt_operator
-  createdAt: Page_createdAt_operator
-  id: Page_id_operator
-  AND: [Page_where_and]
-  OR: [Page_where_or]
+input Project_where_or {
+  slug: Project_slug_operator
+  name: Project_name_operator
+  image: Project_image_operator
+  technologies__name: Project_technologies__name_operator
+  technologies__id: Project_technologies__id_operator
+  description: Project_description_operator
+  url: Project_url_operator
+  github: Project_github_operator
+  content: Project_content_operator
+  content_html: Project_content_html_operator
+  updatedAt: Project_updatedAt_operator
+  createdAt: Project_createdAt_operator
+  id: Project_id_operator
+  AND: [Project_where_and]
+  OR: [Project_where_or]
 }
 
-type countPages {
+type countProjects {
   totalDocs: Int
 }
 
-type pagesDocAccess {
-  fields: PagesDocAccessFields
-  create: PagesCreateDocAccess
-  read: PagesReadDocAccess
-  update: PagesUpdateDocAccess
-  delete: PagesDeleteDocAccess
+type projectsDocAccess {
+  fields: ProjectsDocAccessFields
+  create: ProjectsCreateDocAccess
+  read: ProjectsReadDocAccess
+  update: ProjectsUpdateDocAccess
+  delete: ProjectsDeleteDocAccess
 }
 
-type PagesDocAccessFields {
-  title: PagesDocAccessFields_title
-  content: PagesDocAccessFields_content
-  updatedAt: PagesDocAccessFields_updatedAt
-  createdAt: PagesDocAccessFields_createdAt
+type ProjectsDocAccessFields {
+  slug: ProjectsDocAccessFields_slug
+  name: ProjectsDocAccessFields_name
+  image: ProjectsDocAccessFields_image
+  technologies: ProjectsDocAccessFields_technologies
+  description: ProjectsDocAccessFields_description
+  url: ProjectsDocAccessFields_url
+  github: ProjectsDocAccessFields_github
+  content: ProjectsDocAccessFields_content
+  content_html: ProjectsDocAccessFields_content_html
+  updatedAt: ProjectsDocAccessFields_updatedAt
+  createdAt: ProjectsDocAccessFields_createdAt
 }
 
-type PagesDocAccessFields_title {
-  create: PagesDocAccessFields_title_Create
-  read: PagesDocAccessFields_title_Read
-  update: PagesDocAccessFields_title_Update
-  delete: PagesDocAccessFields_title_Delete
+type ProjectsDocAccessFields_slug {
+  create: ProjectsDocAccessFields_slug_Create
+  read: ProjectsDocAccessFields_slug_Read
+  update: ProjectsDocAccessFields_slug_Update
+  delete: ProjectsDocAccessFields_slug_Delete
 }
 
-type PagesDocAccessFields_title_Create {
+type ProjectsDocAccessFields_slug_Create {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_title_Read {
+type ProjectsDocAccessFields_slug_Read {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_title_Update {
+type ProjectsDocAccessFields_slug_Update {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_title_Delete {
+type ProjectsDocAccessFields_slug_Delete {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_content {
-  create: PagesDocAccessFields_content_Create
-  read: PagesDocAccessFields_content_Read
-  update: PagesDocAccessFields_content_Update
-  delete: PagesDocAccessFields_content_Delete
+type ProjectsDocAccessFields_name {
+  create: ProjectsDocAccessFields_name_Create
+  read: ProjectsDocAccessFields_name_Read
+  update: ProjectsDocAccessFields_name_Update
+  delete: ProjectsDocAccessFields_name_Delete
 }
 
-type PagesDocAccessFields_content_Create {
+type ProjectsDocAccessFields_name_Create {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_content_Read {
+type ProjectsDocAccessFields_name_Read {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_content_Update {
+type ProjectsDocAccessFields_name_Update {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_content_Delete {
+type ProjectsDocAccessFields_name_Delete {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_updatedAt {
-  create: PagesDocAccessFields_updatedAt_Create
-  read: PagesDocAccessFields_updatedAt_Read
-  update: PagesDocAccessFields_updatedAt_Update
-  delete: PagesDocAccessFields_updatedAt_Delete
+type ProjectsDocAccessFields_image {
+  create: ProjectsDocAccessFields_image_Create
+  read: ProjectsDocAccessFields_image_Read
+  update: ProjectsDocAccessFields_image_Update
+  delete: ProjectsDocAccessFields_image_Delete
 }
 
-type PagesDocAccessFields_updatedAt_Create {
+type ProjectsDocAccessFields_image_Create {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_updatedAt_Read {
+type ProjectsDocAccessFields_image_Read {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_updatedAt_Update {
+type ProjectsDocAccessFields_image_Update {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_updatedAt_Delete {
+type ProjectsDocAccessFields_image_Delete {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_createdAt {
-  create: PagesDocAccessFields_createdAt_Create
-  read: PagesDocAccessFields_createdAt_Read
-  update: PagesDocAccessFields_createdAt_Update
-  delete: PagesDocAccessFields_createdAt_Delete
+type ProjectsDocAccessFields_technologies {
+  create: ProjectsDocAccessFields_technologies_Create
+  read: ProjectsDocAccessFields_technologies_Read
+  update: ProjectsDocAccessFields_technologies_Update
+  delete: ProjectsDocAccessFields_technologies_Delete
+  fields: ProjectsDocAccessFields_technologies_Fields
 }
 
-type PagesDocAccessFields_createdAt_Create {
+type ProjectsDocAccessFields_technologies_Create {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_createdAt_Read {
+type ProjectsDocAccessFields_technologies_Read {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_createdAt_Update {
+type ProjectsDocAccessFields_technologies_Update {
   permission: Boolean!
 }
 
-type PagesDocAccessFields_createdAt_Delete {
+type ProjectsDocAccessFields_technologies_Delete {
   permission: Boolean!
 }
 
-type PagesCreateDocAccess {
+type ProjectsDocAccessFields_technologies_Fields {
+  name: ProjectsDocAccessFields_technologies_name
+  id: ProjectsDocAccessFields_technologies_id
+}
+
+type ProjectsDocAccessFields_technologies_name {
+  create: ProjectsDocAccessFields_technologies_name_Create
+  read: ProjectsDocAccessFields_technologies_name_Read
+  update: ProjectsDocAccessFields_technologies_name_Update
+  delete: ProjectsDocAccessFields_technologies_name_Delete
+}
+
+type ProjectsDocAccessFields_technologies_name_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_technologies_name_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_technologies_name_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_technologies_name_Delete {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_technologies_id {
+  create: ProjectsDocAccessFields_technologies_id_Create
+  read: ProjectsDocAccessFields_technologies_id_Read
+  update: ProjectsDocAccessFields_technologies_id_Update
+  delete: ProjectsDocAccessFields_technologies_id_Delete
+}
+
+type ProjectsDocAccessFields_technologies_id_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_technologies_id_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_technologies_id_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_technologies_id_Delete {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_description {
+  create: ProjectsDocAccessFields_description_Create
+  read: ProjectsDocAccessFields_description_Read
+  update: ProjectsDocAccessFields_description_Update
+  delete: ProjectsDocAccessFields_description_Delete
+}
+
+type ProjectsDocAccessFields_description_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_description_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_description_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_description_Delete {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_url {
+  create: ProjectsDocAccessFields_url_Create
+  read: ProjectsDocAccessFields_url_Read
+  update: ProjectsDocAccessFields_url_Update
+  delete: ProjectsDocAccessFields_url_Delete
+}
+
+type ProjectsDocAccessFields_url_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_url_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_url_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_url_Delete {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_github {
+  create: ProjectsDocAccessFields_github_Create
+  read: ProjectsDocAccessFields_github_Read
+  update: ProjectsDocAccessFields_github_Update
+  delete: ProjectsDocAccessFields_github_Delete
+}
+
+type ProjectsDocAccessFields_github_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_github_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_github_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_github_Delete {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_content {
+  create: ProjectsDocAccessFields_content_Create
+  read: ProjectsDocAccessFields_content_Read
+  update: ProjectsDocAccessFields_content_Update
+  delete: ProjectsDocAccessFields_content_Delete
+}
+
+type ProjectsDocAccessFields_content_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_content_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_content_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_content_Delete {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_content_html {
+  create: ProjectsDocAccessFields_content_html_Create
+  read: ProjectsDocAccessFields_content_html_Read
+  update: ProjectsDocAccessFields_content_html_Update
+  delete: ProjectsDocAccessFields_content_html_Delete
+}
+
+type ProjectsDocAccessFields_content_html_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_content_html_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_content_html_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_content_html_Delete {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_updatedAt {
+  create: ProjectsDocAccessFields_updatedAt_Create
+  read: ProjectsDocAccessFields_updatedAt_Read
+  update: ProjectsDocAccessFields_updatedAt_Update
+  delete: ProjectsDocAccessFields_updatedAt_Delete
+}
+
+type ProjectsDocAccessFields_updatedAt_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_updatedAt_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_updatedAt_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_updatedAt_Delete {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_createdAt {
+  create: ProjectsDocAccessFields_createdAt_Create
+  read: ProjectsDocAccessFields_createdAt_Read
+  update: ProjectsDocAccessFields_createdAt_Update
+  delete: ProjectsDocAccessFields_createdAt_Delete
+}
+
+type ProjectsDocAccessFields_createdAt_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_createdAt_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_createdAt_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_createdAt_Delete {
+  permission: Boolean!
+}
+
+type ProjectsCreateDocAccess {
   permission: Boolean!
   where: JSONObject
 }
 
-type PagesReadDocAccess {
+type ProjectsReadDocAccess {
   permission: Boolean!
   where: JSONObject
 }
 
-type PagesUpdateDocAccess {
+type ProjectsUpdateDocAccess {
   permission: Boolean!
   where: JSONObject
 }
 
-type PagesDeleteDocAccess {
+type ProjectsDeleteDocAccess {
   permission: Boolean!
   where: JSONObject
-}
-
-type Media {
-  id: String
-  text: String
-  updatedAt: DateTime
-  createdAt: DateTime
-  url: String
-  thumbnailURL: String
-  filename: String
-  mimeType: String
-  filesize: Float
-  width: Float
-  height: Float
-  focalX: Float
-  focalY: Float
 }
 
 type allMedia {
@@ -1358,10 +2152,282 @@ type PayloadPreferencesDeleteDocAccess {
 
 type Access {
   canAccessAdmin: Boolean!
+  blogs: blogsAccess
   users: usersAccess
-  pages: pagesAccess
+  projects: projectsAccess
   media: mediaAccess
   payload_preferences: payload_preferencesAccess
+}
+
+type blogsAccess {
+  fields: BlogsFields
+  create: BlogsCreateAccess
+  read: BlogsReadAccess
+  update: BlogsUpdateAccess
+  delete: BlogsDeleteAccess
+}
+
+type BlogsFields {
+  slug: BlogsFields_slug
+  title: BlogsFields_title
+  image: BlogsFields_image
+  author: BlogsFields_author
+  publishedAt: BlogsFields_publishedAt
+  summary: BlogsFields_summary
+  content: BlogsFields_content
+  content_html: BlogsFields_content_html
+  updatedAt: BlogsFields_updatedAt
+  createdAt: BlogsFields_createdAt
+}
+
+type BlogsFields_slug {
+  create: BlogsFields_slug_Create
+  read: BlogsFields_slug_Read
+  update: BlogsFields_slug_Update
+  delete: BlogsFields_slug_Delete
+}
+
+type BlogsFields_slug_Create {
+  permission: Boolean!
+}
+
+type BlogsFields_slug_Read {
+  permission: Boolean!
+}
+
+type BlogsFields_slug_Update {
+  permission: Boolean!
+}
+
+type BlogsFields_slug_Delete {
+  permission: Boolean!
+}
+
+type BlogsFields_title {
+  create: BlogsFields_title_Create
+  read: BlogsFields_title_Read
+  update: BlogsFields_title_Update
+  delete: BlogsFields_title_Delete
+}
+
+type BlogsFields_title_Create {
+  permission: Boolean!
+}
+
+type BlogsFields_title_Read {
+  permission: Boolean!
+}
+
+type BlogsFields_title_Update {
+  permission: Boolean!
+}
+
+type BlogsFields_title_Delete {
+  permission: Boolean!
+}
+
+type BlogsFields_image {
+  create: BlogsFields_image_Create
+  read: BlogsFields_image_Read
+  update: BlogsFields_image_Update
+  delete: BlogsFields_image_Delete
+}
+
+type BlogsFields_image_Create {
+  permission: Boolean!
+}
+
+type BlogsFields_image_Read {
+  permission: Boolean!
+}
+
+type BlogsFields_image_Update {
+  permission: Boolean!
+}
+
+type BlogsFields_image_Delete {
+  permission: Boolean!
+}
+
+type BlogsFields_author {
+  create: BlogsFields_author_Create
+  read: BlogsFields_author_Read
+  update: BlogsFields_author_Update
+  delete: BlogsFields_author_Delete
+}
+
+type BlogsFields_author_Create {
+  permission: Boolean!
+}
+
+type BlogsFields_author_Read {
+  permission: Boolean!
+}
+
+type BlogsFields_author_Update {
+  permission: Boolean!
+}
+
+type BlogsFields_author_Delete {
+  permission: Boolean!
+}
+
+type BlogsFields_publishedAt {
+  create: BlogsFields_publishedAt_Create
+  read: BlogsFields_publishedAt_Read
+  update: BlogsFields_publishedAt_Update
+  delete: BlogsFields_publishedAt_Delete
+}
+
+type BlogsFields_publishedAt_Create {
+  permission: Boolean!
+}
+
+type BlogsFields_publishedAt_Read {
+  permission: Boolean!
+}
+
+type BlogsFields_publishedAt_Update {
+  permission: Boolean!
+}
+
+type BlogsFields_publishedAt_Delete {
+  permission: Boolean!
+}
+
+type BlogsFields_summary {
+  create: BlogsFields_summary_Create
+  read: BlogsFields_summary_Read
+  update: BlogsFields_summary_Update
+  delete: BlogsFields_summary_Delete
+}
+
+type BlogsFields_summary_Create {
+  permission: Boolean!
+}
+
+type BlogsFields_summary_Read {
+  permission: Boolean!
+}
+
+type BlogsFields_summary_Update {
+  permission: Boolean!
+}
+
+type BlogsFields_summary_Delete {
+  permission: Boolean!
+}
+
+type BlogsFields_content {
+  create: BlogsFields_content_Create
+  read: BlogsFields_content_Read
+  update: BlogsFields_content_Update
+  delete: BlogsFields_content_Delete
+}
+
+type BlogsFields_content_Create {
+  permission: Boolean!
+}
+
+type BlogsFields_content_Read {
+  permission: Boolean!
+}
+
+type BlogsFields_content_Update {
+  permission: Boolean!
+}
+
+type BlogsFields_content_Delete {
+  permission: Boolean!
+}
+
+type BlogsFields_content_html {
+  create: BlogsFields_content_html_Create
+  read: BlogsFields_content_html_Read
+  update: BlogsFields_content_html_Update
+  delete: BlogsFields_content_html_Delete
+}
+
+type BlogsFields_content_html_Create {
+  permission: Boolean!
+}
+
+type BlogsFields_content_html_Read {
+  permission: Boolean!
+}
+
+type BlogsFields_content_html_Update {
+  permission: Boolean!
+}
+
+type BlogsFields_content_html_Delete {
+  permission: Boolean!
+}
+
+type BlogsFields_updatedAt {
+  create: BlogsFields_updatedAt_Create
+  read: BlogsFields_updatedAt_Read
+  update: BlogsFields_updatedAt_Update
+  delete: BlogsFields_updatedAt_Delete
+}
+
+type BlogsFields_updatedAt_Create {
+  permission: Boolean!
+}
+
+type BlogsFields_updatedAt_Read {
+  permission: Boolean!
+}
+
+type BlogsFields_updatedAt_Update {
+  permission: Boolean!
+}
+
+type BlogsFields_updatedAt_Delete {
+  permission: Boolean!
+}
+
+type BlogsFields_createdAt {
+  create: BlogsFields_createdAt_Create
+  read: BlogsFields_createdAt_Read
+  update: BlogsFields_createdAt_Update
+  delete: BlogsFields_createdAt_Delete
+}
+
+type BlogsFields_createdAt_Create {
+  permission: Boolean!
+}
+
+type BlogsFields_createdAt_Read {
+  permission: Boolean!
+}
+
+type BlogsFields_createdAt_Update {
+  permission: Boolean!
+}
+
+type BlogsFields_createdAt_Delete {
+  permission: Boolean!
+}
+
+type BlogsCreateAccess {
+  permission: Boolean!
+  where: JSONObject
+}
+
+type BlogsReadAccess {
+  permission: Boolean!
+  where: JSONObject
+}
+
+type BlogsUpdateAccess {
+  permission: Boolean!
+  where: JSONObject
+}
+
+type BlogsDeleteAccess {
+  permission: Boolean!
+  where: JSONObject
 }
 
 type usersAccess {
@@ -1497,129 +2563,349 @@ type UsersUnlockAccess {
   where: JSONObject
 }
 
-type pagesAccess {
-  fields: PagesFields
-  create: PagesCreateAccess
-  read: PagesReadAccess
-  update: PagesUpdateAccess
-  delete: PagesDeleteAccess
+type projectsAccess {
+  fields: ProjectsFields
+  create: ProjectsCreateAccess
+  read: ProjectsReadAccess
+  update: ProjectsUpdateAccess
+  delete: ProjectsDeleteAccess
 }
 
-type PagesFields {
-  title: PagesFields_title
-  content: PagesFields_content
-  updatedAt: PagesFields_updatedAt
-  createdAt: PagesFields_createdAt
+type ProjectsFields {
+  slug: ProjectsFields_slug
+  name: ProjectsFields_name
+  image: ProjectsFields_image
+  technologies: ProjectsFields_technologies
+  description: ProjectsFields_description
+  url: ProjectsFields_url
+  github: ProjectsFields_github
+  content: ProjectsFields_content
+  content_html: ProjectsFields_content_html
+  updatedAt: ProjectsFields_updatedAt
+  createdAt: ProjectsFields_createdAt
 }
 
-type PagesFields_title {
-  create: PagesFields_title_Create
-  read: PagesFields_title_Read
-  update: PagesFields_title_Update
-  delete: PagesFields_title_Delete
+type ProjectsFields_slug {
+  create: ProjectsFields_slug_Create
+  read: ProjectsFields_slug_Read
+  update: ProjectsFields_slug_Update
+  delete: ProjectsFields_slug_Delete
 }
 
-type PagesFields_title_Create {
+type ProjectsFields_slug_Create {
   permission: Boolean!
 }
 
-type PagesFields_title_Read {
+type ProjectsFields_slug_Read {
   permission: Boolean!
 }
 
-type PagesFields_title_Update {
+type ProjectsFields_slug_Update {
   permission: Boolean!
 }
 
-type PagesFields_title_Delete {
+type ProjectsFields_slug_Delete {
   permission: Boolean!
 }
 
-type PagesFields_content {
-  create: PagesFields_content_Create
-  read: PagesFields_content_Read
-  update: PagesFields_content_Update
-  delete: PagesFields_content_Delete
+type ProjectsFields_name {
+  create: ProjectsFields_name_Create
+  read: ProjectsFields_name_Read
+  update: ProjectsFields_name_Update
+  delete: ProjectsFields_name_Delete
 }
 
-type PagesFields_content_Create {
+type ProjectsFields_name_Create {
   permission: Boolean!
 }
 
-type PagesFields_content_Read {
+type ProjectsFields_name_Read {
   permission: Boolean!
 }
 
-type PagesFields_content_Update {
+type ProjectsFields_name_Update {
   permission: Boolean!
 }
 
-type PagesFields_content_Delete {
+type ProjectsFields_name_Delete {
   permission: Boolean!
 }
 
-type PagesFields_updatedAt {
-  create: PagesFields_updatedAt_Create
-  read: PagesFields_updatedAt_Read
-  update: PagesFields_updatedAt_Update
-  delete: PagesFields_updatedAt_Delete
+type ProjectsFields_image {
+  create: ProjectsFields_image_Create
+  read: ProjectsFields_image_Read
+  update: ProjectsFields_image_Update
+  delete: ProjectsFields_image_Delete
 }
 
-type PagesFields_updatedAt_Create {
+type ProjectsFields_image_Create {
   permission: Boolean!
 }
 
-type PagesFields_updatedAt_Read {
+type ProjectsFields_image_Read {
   permission: Boolean!
 }
 
-type PagesFields_updatedAt_Update {
+type ProjectsFields_image_Update {
   permission: Boolean!
 }
 
-type PagesFields_updatedAt_Delete {
+type ProjectsFields_image_Delete {
   permission: Boolean!
 }
 
-type PagesFields_createdAt {
-  create: PagesFields_createdAt_Create
-  read: PagesFields_createdAt_Read
-  update: PagesFields_createdAt_Update
-  delete: PagesFields_createdAt_Delete
+type ProjectsFields_technologies {
+  create: ProjectsFields_technologies_Create
+  read: ProjectsFields_technologies_Read
+  update: ProjectsFields_technologies_Update
+  delete: ProjectsFields_technologies_Delete
+  fields: ProjectsFields_technologies_Fields
 }
 
-type PagesFields_createdAt_Create {
+type ProjectsFields_technologies_Create {
   permission: Boolean!
 }
 
-type PagesFields_createdAt_Read {
+type ProjectsFields_technologies_Read {
   permission: Boolean!
 }
 
-type PagesFields_createdAt_Update {
+type ProjectsFields_technologies_Update {
   permission: Boolean!
 }
 
-type PagesFields_createdAt_Delete {
+type ProjectsFields_technologies_Delete {
   permission: Boolean!
 }
 
-type PagesCreateAccess {
+type ProjectsFields_technologies_Fields {
+  name: ProjectsFields_technologies_name
+  id: ProjectsFields_technologies_id
+}
+
+type ProjectsFields_technologies_name {
+  create: ProjectsFields_technologies_name_Create
+  read: ProjectsFields_technologies_name_Read
+  update: ProjectsFields_technologies_name_Update
+  delete: ProjectsFields_technologies_name_Delete
+}
+
+type ProjectsFields_technologies_name_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_technologies_name_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_technologies_name_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_technologies_name_Delete {
+  permission: Boolean!
+}
+
+type ProjectsFields_technologies_id {
+  create: ProjectsFields_technologies_id_Create
+  read: ProjectsFields_technologies_id_Read
+  update: ProjectsFields_technologies_id_Update
+  delete: ProjectsFields_technologies_id_Delete
+}
+
+type ProjectsFields_technologies_id_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_technologies_id_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_technologies_id_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_technologies_id_Delete {
+  permission: Boolean!
+}
+
+type ProjectsFields_description {
+  create: ProjectsFields_description_Create
+  read: ProjectsFields_description_Read
+  update: ProjectsFields_description_Update
+  delete: ProjectsFields_description_Delete
+}
+
+type ProjectsFields_description_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_description_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_description_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_description_Delete {
+  permission: Boolean!
+}
+
+type ProjectsFields_url {
+  create: ProjectsFields_url_Create
+  read: ProjectsFields_url_Read
+  update: ProjectsFields_url_Update
+  delete: ProjectsFields_url_Delete
+}
+
+type ProjectsFields_url_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_url_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_url_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_url_Delete {
+  permission: Boolean!
+}
+
+type ProjectsFields_github {
+  create: ProjectsFields_github_Create
+  read: ProjectsFields_github_Read
+  update: ProjectsFields_github_Update
+  delete: ProjectsFields_github_Delete
+}
+
+type ProjectsFields_github_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_github_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_github_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_github_Delete {
+  permission: Boolean!
+}
+
+type ProjectsFields_content {
+  create: ProjectsFields_content_Create
+  read: ProjectsFields_content_Read
+  update: ProjectsFields_content_Update
+  delete: ProjectsFields_content_Delete
+}
+
+type ProjectsFields_content_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_content_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_content_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_content_Delete {
+  permission: Boolean!
+}
+
+type ProjectsFields_content_html {
+  create: ProjectsFields_content_html_Create
+  read: ProjectsFields_content_html_Read
+  update: ProjectsFields_content_html_Update
+  delete: ProjectsFields_content_html_Delete
+}
+
+type ProjectsFields_content_html_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_content_html_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_content_html_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_content_html_Delete {
+  permission: Boolean!
+}
+
+type ProjectsFields_updatedAt {
+  create: ProjectsFields_updatedAt_Create
+  read: ProjectsFields_updatedAt_Read
+  update: ProjectsFields_updatedAt_Update
+  delete: ProjectsFields_updatedAt_Delete
+}
+
+type ProjectsFields_updatedAt_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_updatedAt_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_updatedAt_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_updatedAt_Delete {
+  permission: Boolean!
+}
+
+type ProjectsFields_createdAt {
+  create: ProjectsFields_createdAt_Create
+  read: ProjectsFields_createdAt_Read
+  update: ProjectsFields_createdAt_Update
+  delete: ProjectsFields_createdAt_Delete
+}
+
+type ProjectsFields_createdAt_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_createdAt_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_createdAt_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_createdAt_Delete {
+  permission: Boolean!
+}
+
+type ProjectsCreateAccess {
   permission: Boolean!
   where: JSONObject
 }
 
-type PagesReadAccess {
+type ProjectsReadAccess {
   permission: Boolean!
   where: JSONObject
 }
 
-type PagesUpdateAccess {
+type ProjectsUpdateAccess {
   permission: Boolean!
   where: JSONObject
 }
 
-type PagesDeleteAccess {
+type ProjectsDeleteAccess {
   permission: Boolean!
   where: JSONObject
 }
@@ -2095,20 +3381,29 @@ type PayloadPreferencesDeleteAccess {
 }
 
 type Mutation {
+  createBlog(data: mutationBlogInput!, draft: Boolean): Blog
+  updateBlog(id: String!, autosave: Boolean, data: mutationBlogUpdateInput!, draft: Boolean): Blog
+  deleteBlog(id: String!): Blog
+  duplicateBlog(id: String!): Blog
   createUser(data: mutationUserInput!, draft: Boolean): User
   updateUser(id: String!, autosave: Boolean, data: mutationUserUpdateInput!, draft: Boolean): User
   deleteUser(id: String!): User
-  refreshTokenUser(token: String): usersRefreshedUser
+  refreshTokenUser: usersRefreshedUser
   logoutUser: String
   unlockUser(email: String!): Boolean!
-  loginUser(email: String, password: String): usersLoginResult
-  forgotPasswordUser(disableEmail: Boolean, email: String!, expiration: Int): Boolean!
+  loginUser(email: String!, password: String): usersLoginResult
+  forgotPasswordUser(disableEmail: Boolean, expiration: Int, email: String!): Boolean!
   resetPasswordUser(password: String, token: String): usersResetPassword
   verifyEmailUser(token: String): Boolean
-  createPage(data: mutationPageInput!, draft: Boolean): Page
-  updatePage(id: String!, autosave: Boolean, data: mutationPageUpdateInput!, draft: Boolean): Page
-  deletePage(id: String!): Page
-  duplicatePage(id: String!): Page
+  createProject(data: mutationProjectInput!, draft: Boolean): Project
+  updateProject(
+    id: String!
+    autosave: Boolean
+    data: mutationProjectUpdateInput!
+    draft: Boolean
+  ): Project
+  deleteProject(id: String!): Project
+  duplicateProject(id: String!): Project
   createMedia(data: mutationMediaInput!, draft: Boolean): Media
   updateMedia(
     id: String!
@@ -2126,6 +3421,32 @@ type Mutation {
   ): PayloadPreference
   deletePayloadPreference(id: String!): PayloadPreference
   duplicatePayloadPreference(id: String!): PayloadPreference
+}
+
+input mutationBlogInput {
+  slug: String!
+  title: String!
+  image: String
+  author: String!
+  publishedAt: String!
+  summary: String!
+  content: JSON
+  content_html: String
+  updatedAt: String
+  createdAt: String
+}
+
+input mutationBlogUpdateInput {
+  slug: String
+  title: String
+  image: String
+  author: String
+  publishedAt: String
+  summary: String
+  content: JSON
+  content_html: String
+  updatedAt: String
+  createdAt: String
 }
 
 input mutationUserInput {
@@ -2157,6 +3478,7 @@ input mutationUserUpdateInput {
 type usersRefreshedUser {
   exp: Int
   refreshedToken: String
+  strategy: String
   user: usersJWT
 }
 
@@ -2176,18 +3498,42 @@ type usersResetPassword {
   user: User
 }
 
-input mutationPageInput {
-  title: String
+input mutationProjectInput {
+  slug: String
+  name: String
+  image: String
+  technologies: [mutationProject_TechnologiesInput!]
+  description: String!
+  url: String
+  github: String
   content: JSON
+  content_html: String
   updatedAt: String
   createdAt: String
 }
 
-input mutationPageUpdateInput {
-  title: String
+input mutationProject_TechnologiesInput {
+  name: String!
+  id: String
+}
+
+input mutationProjectUpdateInput {
+  slug: String
+  name: String
+  image: String
+  technologies: [mutationProjectUpdate_TechnologiesInput]
+  description: String
+  url: String
+  github: String
   content: JSON
+  content_html: String
   updatedAt: String
   createdAt: String
+}
+
+input mutationProjectUpdate_TechnologiesInput {
+  name: String!
+  id: String
 }
 
 input mutationMediaInput {

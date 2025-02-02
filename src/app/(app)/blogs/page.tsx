@@ -9,11 +9,18 @@ export default async function BlogsPage() {
 
   const data = await payload.find({
     collection: 'blogs',
+    depth: 10,
+    limit: 0, // no limit so we can retreive all posts
+    where: {
+      _status: { equals: 'published' },
+    },
   })
 
   if (!data) {
     return <div>No blogs at this moment.</div>
   }
+
+  console.log(data)
 
   return (
     <div className="space-y-4">

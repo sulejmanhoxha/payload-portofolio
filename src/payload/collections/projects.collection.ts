@@ -23,6 +23,7 @@ export const ProjectsCollection: CollectionConfig = {
     {
       name: 'name',
       type: 'text',
+      required: true,
     },
     {
       name: 'image',
@@ -33,6 +34,9 @@ export const ProjectsCollection: CollectionConfig = {
     {
       name: 'technologies',
       type: 'array',
+      admin: {
+        position: 'sidebar',
+      },
       fields: [
         {
           name: 'name',
@@ -46,15 +50,24 @@ export const ProjectsCollection: CollectionConfig = {
       name: 'description',
       type: 'textarea',
       required: true,
+      admin: {
+        position: 'sidebar',
+      },
     },
     {
       name: 'url',
       type: 'text',
+      admin: {
+        position: 'sidebar',
+      },
       validate: (value) => (isValidUrl(value) ? true : 'This is not a URL'),
     },
     {
       name: 'github',
       type: 'text',
+      admin: {
+        position: 'sidebar',
+      },
       validate: (value) => (isValidUrl(value) ? true : 'This is not a URL'),
     },
 

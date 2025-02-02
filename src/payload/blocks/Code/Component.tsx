@@ -1,5 +1,5 @@
+import { type CodeBlock as CodeBlockType } from '@/payload-types'
 import hljs from 'highlight.js'
-import { type CodeBlock as CodeBlockType } from 'payload-types'
 
 export const CodeBlock = ({ language, code }: CodeBlockType) => {
   const auto = language === 'auto'

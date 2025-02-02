@@ -1,6 +1,8 @@
 import { getPayloadHMR } from '@payloadcms/next/utilities'
 import { notFound } from 'next/navigation'
 import config from '@payload-config'
+import { serializeLexical } from '@/payload/serializeLexical'
+// import { serializeLexical } from '@/payload/lexical/serializeLexical'
 // import DOMPurify from 'dompurify'
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
@@ -58,7 +60,8 @@ export default async function BlogViewPage({ params }: { params: { slug: string 
   const data = await payload.find({
     collection: 'blogs',
     where: {
-      slug: { equals: slug }, // Updated to match expected type
+      slug: { equals: slug },
+      _status: { equals: 'published' },
     },
   })
 
@@ -66,11 +69,14 @@ export default async function BlogViewPage({ params }: { params: { slug: string 
     notFound()
   }
 
+  // const content = await serializeLexical(data.docs[0].content)
+
   // Assuming your content is stored in a field named "content"
-  const content = data.docs[0].content_html || ''
-  console.log(content)
+  // const content = data.docs[0].content_html || ''
+  // console.log(content)
   //   const sanitizedContent = DOMPurify.sanitize(content)
 
+  const content = await serializeLexical(data.docs[0].content)
   return (
     <section>
       {/* <main
@@ -78,10 +84,12 @@ export default async function BlogViewPage({ params }: { params: { slug: string 
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       /> */}
 
-      <div
+      {/* <div
         className="prose prose-base prose-slate dark:prose-invert mt-16 max-w-none"
         dangerouslySetInnerHTML={{ __html: content }}
-      />
+      /> */}
+
+      {content}
     </section>
   )
 }
