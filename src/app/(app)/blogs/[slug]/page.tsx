@@ -1,95 +1,83 @@
-import { getPayloadHMR } from '@payloadcms/next/utilities'
-import { notFound } from 'next/navigation'
-import config from '@payload-config'
-import { serializeLexical } from '@/payload/serializeLexical'
-// import { serializeLexical } from '@/payload/lexical/serializeLexical'
-// import DOMPurify from 'dompurify'
+import type { Metadata } from 'next'
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const { slug } = params
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
+import { draftMode } from 'next/headers'
+import React, { cache } from 'react'
+import RichText from '@/components/RichText'
 
-  const payload = await getPayloadHMR({
-    config,
-  })
-
-  const data = await payload.find({
-    collection: 'blogs',
-    where: {
-      slug: { equals: slug }, // Updated to match expected type
-    },
-  })
-
-  if (!data) {
-    notFound()
-  }
-
-  const title = data.docs[0].title
-  const description = data.docs[0].summary
-
-  return {
-    title,
-    description,
-  }
-}
+import { generateMeta } from '@/utils/generateMeta'
+import { LivePreviewListener } from '@/payload/components/LivePreviewListener'
 
 export async function generateStaticParams() {
-  const payload = await getPayloadHMR({
-    config,
-  })
-
-  const data = await payload.find({
+  const payload = await getPayload({ config: configPromise })
+  const blogs = await payload.find({
     collection: 'blogs',
-  })
-
-  if (!data) {
-    return []
-  }
-
-  return data.docs.map((blog) => ({
-    slug: blog.slug,
-  }))
-}
-
-export default async function BlogViewPage({ params }: { params: { slug: string } }) {
-  const { slug } = params
-
-  const payload = await getPayloadHMR({
-    config,
-  })
-
-  const data = await payload.find({
-    collection: 'blogs',
-    where: {
-      slug: { equals: slug },
-      _status: { equals: 'published' },
+    draft: false,
+    limit: 1000,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      slug: true,
     },
   })
 
-  if (!data) {
-    notFound()
-  }
+  const params = blogs.docs.map(({ slug }) => {
+    return { slug }
+  })
 
-  // const content = await serializeLexical(data.docs[0].content)
+  return params
+}
 
-  // Assuming your content is stored in a field named "content"
-  // const content = data.docs[0].content_html || ''
-  // console.log(content)
-  //   const sanitizedContent = DOMPurify.sanitize(content)
+type Args = {
+  params: Promise<{
+    slug?: string
+  }>
+}
 
-  const content = await serializeLexical(data.docs[0].content)
+export default async function Post({ params: paramsPromise }: Args) {
+  const { isEnabled: draft } = await draftMode()
+  const { slug = '' } = await paramsPromise
+  const url = '/blogs/' + slug
+  const blog = await queryPostBySlug({ slug })
+
   return (
-    <section>
-      {/* <main
-        className="prose prose-base prose-slate mt-16 max-w-none dark:prose-invert"
-        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-      /> */}
+    <article className="pb-16 pt-16">
+      {draft && <LivePreviewListener />}
 
-      {/* <div
-        className="prose prose-base prose-slate dark:prose-invert mt-16 max-w-none"
-        dangerouslySetInnerHTML={{ __html: content }}
-      /> */}
-
-      {content}
-    </section>
+      <div className="flex flex-col items-center gap-4 pt-8">
+        <div className="container">
+          <RichText className="mx-auto max-w-[48rem]" data={blog.content} enableGutter={false} />
+        </div>
+      </div>
+    </article>
   )
 }
+
+export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const { slug = '' } = await paramsPromise
+  const post = await queryPostBySlug({ slug })
+
+  return generateMeta({ doc: post })
+}
+
+const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
+  const { isEnabled: draft } = await draftMode()
+
+  const payload = await getPayload({ config: configPromise })
+
+  const result = await payload.find({
+    collection: 'blogs',
+    draft,
+    limit: 1,
+    overrideAccess: draft,
+    pagination: false,
+    where: {
+      slug: {
+        equals: slug,
+      },
+    },
+  })
+
+  return result.docs?.[0] || null
+})

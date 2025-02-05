@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs'
-import matter from 'gray-matter'
+// import matter from 'gray-matter'
 
 const rootDirectory = path.join(process.cwd(), 'src', 'content', 'blogs')
 

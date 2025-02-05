@@ -1,6 +1,10 @@
-import { type FileBlock as FileBlockType, type File } from '@/payload-types'
+import { type File } from '@/payload-types'
 
-export const FileBlock = ({ file }: FileBlockType) => {
+interface FileBlockProps {
+  file: File
+}
+
+export const FileBlock = ({ file }: FileBlockProps) => {
   const fileData = file as File
   const linkText = fileData.title || fileData.filename
   const url = fileData.url!

@@ -8,8 +8,8 @@ import Header from '@/components/header/Header'
 import Footer from '@/components/sections/Footer'
 import Navbar from '@/components/header/Navbar'
 import ColorPalette from '@/components/ColorPalette'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/github.css'
+// import hljs from 'highlight.js'
+// import 'highlight.js/styles/github.css'
 const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',

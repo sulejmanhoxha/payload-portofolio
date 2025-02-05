@@ -1,4 +1,4 @@
-import { formatSlug } from '@/utils/formatSlug'
+import { formatSlugHook } from '@/utils/formatSlug'
 import { isValidUrl } from '@/utils/isValidUrl'
 import { HTMLConverterFeature, lexicalEditor, lexicalHTML } from '@payloadcms/richtext-lexical'
 import { CollectionConfig } from 'payload'
@@ -17,7 +17,7 @@ export const ProjectsCollection: CollectionConfig = {
         position: 'sidebar',
       },
       hooks: {
-        beforeValidate: [formatSlug('name')],
+        beforeValidate: [formatSlugHook('name')],
       },
     },
     {
@@ -60,7 +60,7 @@ export const ProjectsCollection: CollectionConfig = {
       admin: {
         position: 'sidebar',
       },
-      validate: (value) => (isValidUrl(value) ? true : 'This is not a URL'),
+      validate: (value: any) => (isValidUrl(value) ? true : 'This is not a URL'),
     },
     {
       name: 'github',
@@ -68,7 +68,7 @@ export const ProjectsCollection: CollectionConfig = {
       admin: {
         position: 'sidebar',
       },
-      validate: (value) => (isValidUrl(value) ? true : 'This is not a URL'),
+      validate: (value: any) => (isValidUrl(value) ? true : 'This is not a URL'),
     },
 
     {

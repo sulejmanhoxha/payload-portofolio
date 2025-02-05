@@ -6,18 +6,18 @@ export const BlogCard = ({
   title,
   date,
   description,
-  id,
+  slug,
 }: {
   title: string
   date: string
   description: string
-  id: string
+  slug: string
 }) => {
   const router = useRouter()
   return (
     <div
       className="rounded-md bg-secondary p-4 text-foreground transition hover:-translate-y-1.5 hover:cursor-pointer"
-      onClick={() => router.push(`/blogs/${id}`)}
+      onClick={() => router.push(`/blogs/${slug}`)}
     >
       <h2 className="mb-1 text-lg font-medium">{title}</h2>
       <p className="mb-2 text-xs text-muted">{formatDate(date)}</p>

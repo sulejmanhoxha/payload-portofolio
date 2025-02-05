@@ -1,23 +1,19 @@
-import { type CodeBlock as CodeBlockType } from '@/payload-types'
-import hljs from 'highlight.js'
+import { Code } from '@/payload/blocks/Code/Component.client'
 
-export const CodeBlock = ({ language, code }: CodeBlockType) => {
-  const auto = language === 'auto'
-  const highlightOptions = {
-    language,
-  }
+export type CodeBlockProps = {
+  code: string
+  language?: string
+  blockType: 'code'
+}
 
-  // Apply server-side syntax highlighting with Highlight.js
-  const highlightResult = auto ? hljs.highlightAuto(code) : hljs.highlight(code, highlightOptions)
-  const hljsClasses = ['hljs', highlightResult.language].filter(Boolean)
+type Props = CodeBlockProps & {
+  className?: string
+}
 
-  // Return the highlighted code block
+export const CodeBlock: React.FC<Props> = ({ className, code, language }) => {
   return (
-    <pre>
-      <code
-        className={hljsClasses.join(' ')}
-        dangerouslySetInnerHTML={{ __html: highlightResult.value }}
-      />
-    </pre>
+    <div className={[className, 'not-prose'].filter(Boolean).join(' ')}>
+      <Code code={code} language={language} />
+    </div>
   )
 }

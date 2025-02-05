@@ -1,17 +1,68 @@
-import { type MediaBlock as MediaBlockType, Media } from '@/payload-types'
-import Image from 'next/image'
+import type { StaticImageData } from 'next/image'
 
-export const MediaBlock = ({ media }: MediaBlockType) => {
-  const mediaData = media as Media
-  const url = mediaData.url!
-  const mimeType = mediaData.mimeType as string
-  const width = mediaData.width || undefined
-  const height = mediaData.height || undefined
+import { cn } from '@/lib/utils'
+import React from 'react'
+import RichText from '@/components/RichText'
 
-  if (mimeType.startsWith('image/')) {
-    return <Image src={url} alt={mediaData.alt} width={width} height={height} />
-  } else if (mimeType.startsWith('video/')) {
-    return <video src={url} aria-label={mediaData.alt} controls={true}></video>
-  }
-  return <span>Unsupported media block mime type: {mimeType}</span>
+import type { MediaBlock as MediaBlockProps } from '@/payload-types'
+import { Media } from '@/payload/blocks/MediaBlock/Media'
+
+// import { Media } from '../../components/Media'
+
+type Props = MediaBlockProps & {
+  breakout?: boolean
+  captionClassName?: string
+  className?: string
+  enableGutter?: boolean
+  imgClassName?: string
+  staticImage?: StaticImageData
+  disableInnerContainer?: boolean
+}
+
+export const MediaBlock: React.FC<Props> = (props) => {
+  const {
+    captionClassName,
+    className,
+    enableGutter = true,
+    imgClassName,
+    media,
+    staticImage,
+    disableInnerContainer,
+  } = props
+
+  let caption
+  if (media && typeof media === 'object') caption = media.caption
+
+  return (
+    <div
+      className={cn(
+        '',
+        {
+          container: enableGutter,
+        },
+        className,
+      )}
+    >
+      {(media || staticImage) && (
+        <Media
+          imgClassName={cn('border border-border rounded-[0.8rem]', imgClassName)}
+          resource={media}
+          src={staticImage}
+        />
+      )}
+      {caption && (
+        <div
+          className={cn(
+            'mt-6',
+            {
+              container: !disableInnerContainer,
+            },
+            captionClassName,
+          )}
+        >
+          <RichText data={caption} enableGutter={false} />
+        </div>
+      )}
+    </div>
+  )
 }

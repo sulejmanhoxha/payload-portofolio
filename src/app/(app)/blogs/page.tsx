@@ -1,37 +1,34 @@
-import { BlogCard } from '@/components/BlogCard'
-import { getPayloadHMR } from '@payloadcms/next/utilities'
 import config from '@payload-config'
+import { getPayload } from 'payload'
 
-export default async function BlogsPage() {
-  const payload = await getPayloadHMR({
-    config,
-  })
+export const dynamic = 'force-static'
+export const revalidate = 600
 
-  const data = await payload.find({
+export default async function BlogPage() {
+  const payload = await getPayload({ config })
+  const blogs = await payload.find({
     collection: 'blogs',
-    depth: 10,
-    limit: 0, // no limit so we can retreive all posts
-    where: {
-      _status: { equals: 'published' },
-    },
+    draft: false,
+    limit: 1000,
+    overrideAccess: false,
+    pagination: false,
   })
-
-  if (!data) {
-    return <div>No blogs at this moment.</div>
-  }
-
-  console.log(data)
 
   return (
-    <div className="space-y-4">
-      {data.docs.map((blog) => (
-        <BlogCard
-          key={blog.id}
-          title={blog.title}
-          date={blog.publishedAt}
-          description={blog.summary}
-          id={blog.slug}
-        />
+    <div className="pb-24 pt-24">
+      <div className="container mb-16">
+        <div className="prose max-w-none dark:prose-invert">
+          <h1>Posts</h1>
+        </div>
+      </div>
+
+      {blogs.docs.map((post) => (
+        <div key={post.slug} className="mb-16">
+          <a href={`/blogs/${post.slug}`}>
+            <h2 className="text-2xl font-bold">{post.id}</h2>
+          </a>
+          <p className="text-gray-500 dark:text-gray-400">{post.summary}</p>
+        </div>
       ))}
     </div>
   )

@@ -1,16 +1,16 @@
 import path from 'path'
-import { HTMLConverterFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { buildConfig } from 'payload'
 import sharp from 'sharp'
+import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
-
-import { seoPlugin } from '@payloadcms/plugin-seo'
+import { postgresAdapter } from '@payloadcms/db-postgres'
 import { BlogCollection } from '@/payload/collections/blog/blog.collection'
 import { UsersCollection } from '@/payload/collections/users.collection'
 import { ProjectsCollection } from '@/payload/collections/projects.collection'
 import { MediaCollection } from '@/payload/collections/media.collection'
 import { FilesCollection } from '@/payload/collections/files.collection'
+import { defaultLexical } from '@/components/RichText/defaultLexical'
+import { getServerSideURL } from '@/utils/getURL'
+import { plugins } from '@/payload/plugins'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -25,6 +25,28 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    livePreview: {
+      breakpoints: [
+        {
+          label: 'Mobile',
+          name: 'mobile',
+          width: 375,
+          height: 667,
+        },
+        {
+          label: 'Tablet',
+          name: 'tablet',
+          width: 768,
+          height: 1024,
+        },
+        {
+          label: 'Desktop',
+          name: 'desktop',
+          width: 1440,
+          height: 900,
+        },
+      ],
+    },
   },
   collections: [
     BlogCollection,
@@ -33,24 +55,16 @@ export default buildConfig({
     MediaCollection,
     FilesCollection,
   ],
-  // editor: lexicalEditor({
-  //   features: ({ defaultFeatures }) => {
-  //     return [
-  //       ...defaultFeatures,
-  //       HTMLConverterFeature({
-  //         converters: ({ defaultConverters }) => [...defaultConverters],
-  //       }),
-  //     ]
-  //   },
-  // }),
-  editor: lexicalEditor({}),
+  editor: defaultLexical,
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-
-  db: mongooseAdapter({
-    url: process.env.MONGODB_URI || '',
+  cors: [getServerSideURL()].filter(Boolean),
+  db: postgresAdapter({
+    pool: {
+      connectionString: process.env.DATABASE_URI || '',
+    },
     migrationDir: path.resolve(dirname, 'payload', 'migrations'),
   }),
   async onInit(payload) {
@@ -70,8 +84,5 @@ export default buildConfig({
     }
   },
   sharp,
-  plugins: [
-    // storage-adapter-placeholder
-    seoPlugin({}),
-  ],
+  plugins: [...plugins],
 })

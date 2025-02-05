@@ -1,14 +1,10 @@
-import { formatSlug } from '@/utils/formatSlug'
 import {
   BlocksFeature,
-  EXPERIMENTAL_TableFeature,
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
-  HTMLConverterFeature,
   InlineToolbarFeature,
   lexicalEditor,
-  lexicalHTML,
 } from '@payloadcms/richtext-lexical'
 import { CollectionConfig } from 'payload'
 import {
@@ -19,30 +15,52 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { Code } from '@/payload/blocks/Code/config'
-import { File } from '@/payload/blocks/File/config'
 import { MediaBlock } from '@/payload/blocks/MediaBlock/config'
-import { Embed } from '@/payload/blocks/Embed/config'
+import { authenticated } from '@/payload/access/authenticated'
+import { authenticatedOrPublished } from '@/payload/access/authenticatedOrPublished'
+import { slugField } from '@/payload/collections/blog/slug.field'
+import { generatePreviewPath } from '@/utils/generatePreviewPath'
+import { revalidateBlog, revalidateDelete } from '@/payload/collections/blog/hooks/revalidate'
 
 export const BlogCollection: CollectionConfig = {
   slug: 'blogs',
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
-    useAsTitle: 'title',
-  },
-  defaultSort: '-publishedAt',
-  fields: [
-    {
-      name: 'slug',
-      label: 'Slug',
-      type: 'text',
-      required: true,
-      admin: {
-        position: 'sidebar',
-      },
-      hooks: {
-        beforeValidate: [formatSlug('title')],
+    livePreview: {
+      url: ({ data, req }) => {
+        const path = generatePreviewPath({
+          slug: typeof data?.slug === 'string' ? data.slug : '',
+          collection: 'blogs',
+          req,
+        })
+
+        return path
       },
     },
+    preview: (data, { req }) =>
+      generatePreviewPath({
+        slug: typeof data?.slug === 'string' ? data.slug : '',
+        collection: 'blogs',
+        req,
+      }),
+    useAsTitle: 'title',
+  },
+  access: {
+    create: authenticated,
+    delete: authenticated,
+    read: authenticatedOrPublished,
+    update: authenticated,
+  },
+  // defaultPopulate: {
+  //   title: true,
+  //   slug: true,
+  //   meta: {
+  //     image: true,
+  //     description: true,
+  //   },
+  // },
+  defaultSort: '-publishedAt',
+  fields: [
     {
       name: 'title',
       type: 'text',
@@ -77,33 +95,71 @@ export const BlogCollection: CollectionConfig = {
       },
       relationTo: 'users',
     },
+    // {
+    //   name: 'populatedAuthors',
+    //   type: 'array',
+    //   access: {
+    //     update: () => false,
+    //   },
+    //   admin: {
+    //     disabled: true,
+    //     readOnly: true,
+    //   },
+    //   fields: [
+    //     {
+    //       name: 'id',
+    //       type: 'text',
+    //     },
+    //     {
+    //       name: 'name',
+    //       type: 'text',
+    //     },
+    //   ],
+    // },
     {
       type: 'tabs',
       tabs: [
         {
           fields: [
             {
+              name: 'heroImage',
+              type: 'upload',
+              relationTo: 'media',
+            },
+            {
               name: 'content',
               type: 'richText',
               label: false,
               required: true,
-              editor: lexicalEditor({
-                features: ({ defaultFeatures }) => [
-                  ...defaultFeatures,
-                  HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
-                  BlocksFeature({
-                    blocks: [Code, MediaBlock, File, Embed],
-                    inlineBlocks: [Code, MediaBlock, File, Embed],
-                  }),
+              // editor: lexicalEditor({
+              //   features: ({ defaultFeatures }) => [
+              //     ...defaultFeatures,
+              //     HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+              //     BlocksFeature({
+              //       blocks: [Code, MediaBlock, File, Embed],
+              //       inlineBlocks: [Code, MediaBlock, File, Embed],
+              //     }),
 
-                  FixedToolbarFeature(),
-                  InlineToolbarFeature(),
-                  HorizontalRuleFeature(),
-                  HTMLConverterFeature({}),
-                ],
+              //     FixedToolbarFeature(),
+              //     InlineToolbarFeature(),
+              //     HorizontalRuleFeature(),
+              //     HTMLConverterFeature({}),
+              //   ],
+              // }),
+              editor: lexicalEditor({
+                features: ({ rootFeatures }) => {
+                  return [
+                    ...rootFeatures,
+                    HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+                    BlocksFeature({ blocks: [Code, MediaBlock] }),
+                    FixedToolbarFeature(),
+                    InlineToolbarFeature(),
+                    HorizontalRuleFeature(),
+                  ]
+                },
               }),
             },
-            lexicalHTML('content', { name: 'content_html' }),
+            // lexicalHTML('content', { name: 'content_html' }),
           ],
           label: 'Content',
         },
@@ -132,7 +188,7 @@ export const BlogCollection: CollectionConfig = {
               imagePath: 'meta.image',
             }),
             MetaTitleField({
-              hasGenerateFn: false,
+              hasGenerateFn: true,
             }),
             MetaImageField({
               hasGenerateFn: false,
@@ -151,18 +207,19 @@ export const BlogCollection: CollectionConfig = {
         },
       ],
     },
-
-    // lexicalHTML('content', { name: 'content_html' }),
+    ...slugField(),
   ],
   versions: {
     drafts: {
       autosave: {
         interval: 100, // We set this interval for optimal live preview
       },
+      schedulePublish: true,
     },
     maxPerDoc: 50,
   },
-  // hooks: {
-  //   afterChange: [revalidatePost],
-  // },
+  hooks: {
+    afterChange: [revalidateBlog],
+    afterDelete: [revalidateDelete],
+  },
 }
