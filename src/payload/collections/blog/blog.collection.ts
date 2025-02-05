@@ -5,6 +5,11 @@ import {
   HorizontalRuleFeature,
   InlineToolbarFeature,
   lexicalEditor,
+  LinkFeature,
+  OrderedListFeature,
+  UnorderedListFeature,
+  IndentFeature,
+  InlineCodeFeature,
 } from '@payloadcms/richtext-lexical'
 import { CollectionConfig } from 'payload'
 import {
@@ -155,6 +160,11 @@ export const BlogCollection: CollectionConfig = {
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
                     HorizontalRuleFeature(),
+                    LinkFeature(),
+                    OrderedListFeature(),
+                    UnorderedListFeature(),
+                    IndentFeature(),
+                    InlineCodeFeature(),
                   ]
                 },
               }),
