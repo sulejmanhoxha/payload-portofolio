@@ -233,16 +233,17 @@ export interface Media {
 export interface Project {
   id: number;
   slug?: string | null;
+  slugLock?: boolean | null;
   name: string;
+  publishedAt: string;
   image: number | Media;
   technologies: {
     name: string;
     id?: string | null;
   }[];
-  description: string;
   url?: string | null;
   github?: string | null;
-  content?: {
+  content: {
     root: {
       type: string;
       children: {
@@ -256,10 +257,19 @@ export interface Project {
       version: number;
     };
     [k: string]: unknown;
-  } | null;
-  content_html?: string | null;
+  };
+  description: string;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -490,7 +500,9 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface ProjectsSelect<T extends boolean = true> {
   slug?: T;
+  slugLock?: T;
   name?: T;
+  publishedAt?: T;
   image?: T;
   technologies?:
     | T
@@ -498,13 +510,20 @@ export interface ProjectsSelect<T extends boolean = true> {
         name?: T;
         id?: T;
       };
-  description?: T;
   url?: T;
   github?: T;
   content?: T;
-  content_html?: T;
+  description?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -688,10 +707,15 @@ export interface TaskSchedulePublish {
   input: {
     type?: ('publish' | 'unpublish') | null;
     locale?: string | null;
-    doc?: {
-      relationTo: 'blogs';
-      value: number | Blog;
-    } | null;
+    doc?:
+      | ({
+          relationTo: 'blogs';
+          value: number | Blog;
+        } | null)
+      | ({
+          relationTo: 'projects';
+          value: number | Project;
+        } | null);
     global?: string | null;
     user?: (number | null) | User;
   };

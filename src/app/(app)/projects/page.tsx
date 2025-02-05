@@ -1,30 +1,24 @@
 import { ProjectCard } from '@/components/ProjectCard'
+import config from '@payload-config'
+import { getPayload } from 'payload'
 
-export default function ProjectsPage() {
+export const dynamic = 'force-static'
+export const revalidate = 600
+
+export default async function ProjectsPage() {
+  const payload = await getPayload({ config })
+  const projects = await payload.find({
+    collection: 'projects',
+    draft: false,
+    limit: 1000,
+    overrideAccess: false,
+    pagination: false,
+  })
   return (
     <div className="space-y-4">
-      <h1>Comming soon...</h1>
-      <ProjectCard
-        title="How to Build a Personal Website with Next.js"
-        image="/projects/placeholder.jpg"
-        description="In this blog post, we will learn how to build a personal website using Next.js and Tailwind CSS."
-        technologies={['NextJS', 'Tailwind CSS']}
-        id="1"
-      />
-      <ProjectCard
-        title="How to Build a Personal Website with Next.js"
-        image="/projects/placeholder.jpg"
-        description="In this blog post, we will learn how to build a personal website using Next.js and Tailwind CSS."
-        technologies={['NextJS', 'Tailwind CSS']}
-        id="2"
-      />
-      <ProjectCard
-        title="Build a Personal Website with Next.js and Tailwind CSS"
-        image="/projects/placeholder.jpg"
-        technologies={['NextJS', 'Tailwind CSS']}
-        description="Learn how to build a personal website using Next.js and Tailwind CSS."
-        id="3"
-      />
+      {projects.docs.map((project) => (
+        <ProjectCard key={project.slug} project={project} />
+      ))}
     </div>
   )
 }

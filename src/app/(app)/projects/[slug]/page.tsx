@@ -1,3 +1,8 @@
+type Args = {
+  params: Promise<{
+    slug?: string
+  }>
+}
 import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
@@ -11,8 +16,8 @@ import { LivePreviewListener } from '@/payload/components/LivePreviewListener'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
-  const blogs = await payload.find({
-    collection: 'blogs',
+  const projects = await payload.find({
+    collection: 'projects',
     draft: false,
     limit: 1000,
     overrideAccess: false,
@@ -22,48 +27,42 @@ export async function generateStaticParams() {
     },
   })
 
-  const params = blogs.docs.map(({ slug }) => {
+  const params = projects.docs.map(({ slug }) => {
     return { slug }
   })
 
   return params
 }
 
-type Args = {
-  params: Promise<{
-    slug?: string
-  }>
-}
-
-export default async function BlogViewPage({ params: paramsPromise }: Args) {
+export default async function ProjectViewPage({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
-  const url = '/blogs/' + slug
-  const blog = await queryPostBySlug({ slug })
+  const url = '/projects/' + slug
+  const project = await queryProjectBySlug({ slug })
 
   return (
     <>
       {draft && <LivePreviewListener />}
 
-      <RichText className="mx-auto max-w-[48rem]" data={blog.content} enableGutter={false} />
+      <RichText className="mx-auto max-w-[48rem]" data={project.content} enableGutter={false} />
     </>
   )
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
-  const post = await queryPostBySlug({ slug })
+  const project = await queryProjectBySlug({ slug })
 
-  return generateMeta({ doc: post })
+  return generateMeta({ doc: project })
 }
 
-const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
+const queryProjectBySlug = cache(async ({ slug }: { slug: string }) => {
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
-    collection: 'blogs',
+    collection: 'projects',
     draft,
     limit: 1,
     overrideAccess: draft,

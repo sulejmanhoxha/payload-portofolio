@@ -4,16 +4,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TYPE "public"."enum_blogs_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum__blogs_v_version_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum_projects_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum__projects_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum_payload_jobs_log_task_slug" AS ENUM('inline', 'schedulePublish');
   CREATE TYPE "public"."enum_payload_jobs_log_state" AS ENUM('failed', 'succeeded');
   CREATE TYPE "public"."enum_payload_jobs_task_slug" AS ENUM('inline', 'schedulePublish');
-  CREATE TABLE IF NOT EXISTS "blogs_populated_authors" (
-  	"_order" integer NOT NULL,
-  	"_parent_id" integer NOT NULL,
-  	"id" varchar PRIMARY KEY NOT NULL,
-  	"name" varchar
-  );
-  
   CREATE TABLE IF NOT EXISTS "blogs" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"title" varchar,
@@ -21,7 +16,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"authors_id" integer,
   	"hero_image_id" integer,
   	"content" jsonb,
-  	"content_html" varchar,
   	"summary" varchar,
   	"meta_title" varchar,
   	"meta_image_id" integer,
@@ -33,14 +27,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_status" "enum_blogs_status" DEFAULT 'draft'
   );
   
-  CREATE TABLE IF NOT EXISTS "_blogs_v_version_populated_authors" (
-  	"_order" integer NOT NULL,
-  	"_parent_id" integer NOT NULL,
-  	"id" serial PRIMARY KEY NOT NULL,
-  	"_uuid" varchar,
-  	"name" varchar
-  );
-  
   CREATE TABLE IF NOT EXISTS "_blogs_v" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"parent_id" integer,
@@ -49,7 +35,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"version_authors_id" integer,
   	"version_hero_image_id" integer,
   	"version_content" jsonb,
-  	"version_content_html" varchar,
   	"version_summary" varchar,
   	"version_meta_title" varchar,
   	"version_meta_image_id" integer,
@@ -82,21 +67,58 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
-  	"name" varchar NOT NULL
+  	"name" varchar
   );
   
   CREATE TABLE IF NOT EXISTS "projects" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"slug" varchar,
-  	"name" varchar NOT NULL,
-  	"image_id" integer NOT NULL,
-  	"description" varchar NOT NULL,
+  	"slug_lock" boolean DEFAULT true,
+  	"name" varchar,
+  	"published_at" timestamp(3) with time zone,
+  	"image_id" integer,
   	"url" varchar,
   	"github" varchar,
   	"content" jsonb,
-  	"content_html" varchar,
+  	"description" varchar,
+  	"meta_title" varchar,
+  	"meta_image_id" integer,
+  	"meta_description" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
-  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"_status" "enum_projects_status" DEFAULT 'draft'
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_projects_v_version_technologies" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_projects_v" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"parent_id" integer,
+  	"version_slug" varchar,
+  	"version_slug_lock" boolean DEFAULT true,
+  	"version_name" varchar,
+  	"version_published_at" timestamp(3) with time zone,
+  	"version_image_id" integer,
+  	"version_url" varchar,
+  	"version_github" varchar,
+  	"version_content" jsonb,
+  	"version_description" varchar,
+  	"version_meta_title" varchar,
+  	"version_meta_image_id" integer,
+  	"version_meta_description" varchar,
+  	"version_updated_at" timestamp(3) with time zone,
+  	"version_created_at" timestamp(3) with time zone,
+  	"version__status" "enum__projects_v_version_status" DEFAULT 'draft',
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"latest" boolean,
+  	"autosave" boolean
   );
   
   CREATE TABLE IF NOT EXISTS "media" (
@@ -248,12 +270,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   );
   
   DO $$ BEGIN
-   ALTER TABLE "blogs_populated_authors" ADD CONSTRAINT "blogs_populated_authors_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."blogs"("id") ON DELETE cascade ON UPDATE no action;
-  EXCEPTION
-   WHEN duplicate_object THEN null;
-  END $$;
-  
-  DO $$ BEGIN
    ALTER TABLE "blogs" ADD CONSTRAINT "blogs_authors_id_users_id_fk" FOREIGN KEY ("authors_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
@@ -267,12 +283,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   
   DO $$ BEGIN
    ALTER TABLE "blogs" ADD CONSTRAINT "blogs_meta_image_id_media_id_fk" FOREIGN KEY ("meta_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
-  EXCEPTION
-   WHEN duplicate_object THEN null;
-  END $$;
-  
-  DO $$ BEGIN
-   ALTER TABLE "_blogs_v_version_populated_authors" ADD CONSTRAINT "_blogs_v_version_populated_authors_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_blogs_v"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
   END $$;
@@ -309,6 +319,36 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   
   DO $$ BEGIN
    ALTER TABLE "projects" ADD CONSTRAINT "projects_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "projects" ADD CONSTRAINT "projects_meta_image_id_media_id_fk" FOREIGN KEY ("meta_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_projects_v_version_technologies" ADD CONSTRAINT "_projects_v_version_technologies_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_projects_v"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_projects_v" ADD CONSTRAINT "_projects_v_parent_id_projects_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."projects"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_projects_v" ADD CONSTRAINT "_projects_v_version_image_id_media_id_fk" FOREIGN KEY ("version_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_projects_v" ADD CONSTRAINT "_projects_v_version_meta_image_id_media_id_fk" FOREIGN KEY ("version_meta_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
   END $$;
@@ -373,8 +413,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
    WHEN duplicate_object THEN null;
   END $$;
   
-  CREATE INDEX IF NOT EXISTS "blogs_populated_authors_order_idx" ON "blogs_populated_authors" USING btree ("_order");
-  CREATE INDEX IF NOT EXISTS "blogs_populated_authors_parent_id_idx" ON "blogs_populated_authors" USING btree ("_parent_id");
   CREATE INDEX IF NOT EXISTS "blogs_authors_idx" ON "blogs" USING btree ("authors_id");
   CREATE INDEX IF NOT EXISTS "blogs_hero_image_idx" ON "blogs" USING btree ("hero_image_id");
   CREATE INDEX IF NOT EXISTS "blogs_meta_meta_image_idx" ON "blogs" USING btree ("meta_image_id");
@@ -382,8 +420,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "blogs_updated_at_idx" ON "blogs" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "blogs_created_at_idx" ON "blogs" USING btree ("created_at");
   CREATE INDEX IF NOT EXISTS "blogs__status_idx" ON "blogs" USING btree ("_status");
-  CREATE INDEX IF NOT EXISTS "_blogs_v_version_populated_authors_order_idx" ON "_blogs_v_version_populated_authors" USING btree ("_order");
-  CREATE INDEX IF NOT EXISTS "_blogs_v_version_populated_authors_parent_id_idx" ON "_blogs_v_version_populated_authors" USING btree ("_parent_id");
   CREATE INDEX IF NOT EXISTS "_blogs_v_parent_idx" ON "_blogs_v" USING btree ("parent_id");
   CREATE INDEX IF NOT EXISTS "_blogs_v_version_version_authors_idx" ON "_blogs_v" USING btree ("version_authors_id");
   CREATE INDEX IF NOT EXISTS "_blogs_v_version_version_hero_image_idx" ON "_blogs_v" USING btree ("version_hero_image_id");
@@ -401,9 +437,25 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE UNIQUE INDEX IF NOT EXISTS "users_email_idx" ON "users" USING btree ("email");
   CREATE INDEX IF NOT EXISTS "projects_technologies_order_idx" ON "projects_technologies" USING btree ("_order");
   CREATE INDEX IF NOT EXISTS "projects_technologies_parent_id_idx" ON "projects_technologies" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "projects_slug_idx" ON "projects" USING btree ("slug");
   CREATE INDEX IF NOT EXISTS "projects_image_idx" ON "projects" USING btree ("image_id");
+  CREATE INDEX IF NOT EXISTS "projects_meta_meta_image_idx" ON "projects" USING btree ("meta_image_id");
   CREATE INDEX IF NOT EXISTS "projects_updated_at_idx" ON "projects" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "projects_created_at_idx" ON "projects" USING btree ("created_at");
+  CREATE INDEX IF NOT EXISTS "projects__status_idx" ON "projects" USING btree ("_status");
+  CREATE INDEX IF NOT EXISTS "_projects_v_version_technologies_order_idx" ON "_projects_v_version_technologies" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_projects_v_version_technologies_parent_id_idx" ON "_projects_v_version_technologies" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_projects_v_parent_idx" ON "_projects_v" USING btree ("parent_id");
+  CREATE INDEX IF NOT EXISTS "_projects_v_version_version_slug_idx" ON "_projects_v" USING btree ("version_slug");
+  CREATE INDEX IF NOT EXISTS "_projects_v_version_version_image_idx" ON "_projects_v" USING btree ("version_image_id");
+  CREATE INDEX IF NOT EXISTS "_projects_v_version_meta_version_meta_image_idx" ON "_projects_v" USING btree ("version_meta_image_id");
+  CREATE INDEX IF NOT EXISTS "_projects_v_version_version_updated_at_idx" ON "_projects_v" USING btree ("version_updated_at");
+  CREATE INDEX IF NOT EXISTS "_projects_v_version_version_created_at_idx" ON "_projects_v" USING btree ("version_created_at");
+  CREATE INDEX IF NOT EXISTS "_projects_v_version_version__status_idx" ON "_projects_v" USING btree ("version__status");
+  CREATE INDEX IF NOT EXISTS "_projects_v_created_at_idx" ON "_projects_v" USING btree ("created_at");
+  CREATE INDEX IF NOT EXISTS "_projects_v_updated_at_idx" ON "_projects_v" USING btree ("updated_at");
+  CREATE INDEX IF NOT EXISTS "_projects_v_latest_idx" ON "_projects_v" USING btree ("latest");
+  CREATE INDEX IF NOT EXISTS "_projects_v_autosave_idx" ON "_projects_v" USING btree ("autosave");
   CREATE INDEX IF NOT EXISTS "media_updated_at_idx" ON "media" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "media_created_at_idx" ON "media" USING btree ("created_at");
   CREATE UNIQUE INDEX IF NOT EXISTS "media_filename_idx" ON "media" USING btree ("filename");
@@ -453,13 +505,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
-   DROP TABLE "blogs_populated_authors" CASCADE;
-  DROP TABLE "blogs" CASCADE;
-  DROP TABLE "_blogs_v_version_populated_authors" CASCADE;
+   DROP TABLE "blogs" CASCADE;
   DROP TABLE "_blogs_v" CASCADE;
   DROP TABLE "users" CASCADE;
   DROP TABLE "projects_technologies" CASCADE;
   DROP TABLE "projects" CASCADE;
+  DROP TABLE "_projects_v_version_technologies" CASCADE;
+  DROP TABLE "_projects_v" CASCADE;
   DROP TABLE "media" CASCADE;
   DROP TABLE "files" CASCADE;
   DROP TABLE "payload_jobs_log" CASCADE;
@@ -471,6 +523,8 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "payload_migrations" CASCADE;
   DROP TYPE "public"."enum_blogs_status";
   DROP TYPE "public"."enum__blogs_v_version_status";
+  DROP TYPE "public"."enum_projects_status";
+  DROP TYPE "public"."enum__projects_v_version_status";
   DROP TYPE "public"."enum_payload_jobs_log_task_slug";
   DROP TYPE "public"."enum_payload_jobs_log_state";
   DROP TYPE "public"."enum_payload_jobs_task_slug";`)

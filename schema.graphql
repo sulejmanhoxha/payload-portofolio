@@ -15,6 +15,8 @@ type Query {
   Projects(draft: Boolean, where: Project_where, limit: Int, page: Int, pagination: Boolean, sort: String): Projects
   countProjects(draft: Boolean, where: Project_where): countProjects
   docAccessProject(id: Int!): projectsDocAccess
+  versionProject(id: Int): ProjectVersion
+  versionsProjects(where: versionsProject_where, limit: Int, page: Int, pagination: Boolean, sort: String): versionsProjects
   Media(id: Int!, draft: Boolean): Media
   allMedia(draft: Boolean, where: Media_where, limit: Int, page: Int, pagination: Boolean, sort: String): allMedia
   countallMedia(draft: Boolean, where: Media_where): countallMedia
@@ -43,10 +45,8 @@ type Blog {
   title: String
   publishedAt: DateTime
   authors: User
-  populatedAuthors: [Blog_PopulatedAuthors!]
   heroImage: Media
   content(depth: Int): JSON
-  content_html: String
   summary: String
   meta: Blog_Meta
   slug: String
@@ -78,11 +78,6 @@ type User {
 A field whose value conforms to the standard internet email address format as specified in HTML Spec: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address.
 """
 scalar EmailAddress @specifiedBy(url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address")
-
-type Blog_PopulatedAuthors {
-  id: String
-  name: String
-}
 
 type Media {
   id: Int!
@@ -209,11 +204,8 @@ input Blog_where {
   title: Blog_title_operator
   publishedAt: Blog_publishedAt_operator
   authors: Blog_authors_operator
-  populatedAuthors__id: Blog_populatedAuthors__id_operator
-  populatedAuthors__name: Blog_populatedAuthors__name_operator
   heroImage: Blog_heroImage_operator
   content: Blog_content_operator
-  content_html: Blog_content_html_operator
   summary: Blog_summary_operator
   meta__title: Blog_meta__title_operator
   meta__image: Blog_meta__image_operator
@@ -257,28 +249,6 @@ input Blog_authors_operator {
   exists: Boolean
 }
 
-input Blog_populatedAuthors__id_operator {
-  equals: String
-  not_equals: String
-  like: String
-  contains: String
-  in: [String]
-  not_in: [String]
-  all: [String]
-  exists: Boolean
-}
-
-input Blog_populatedAuthors__name_operator {
-  equals: String
-  not_equals: String
-  like: String
-  contains: String
-  in: [String]
-  not_in: [String]
-  all: [String]
-  exists: Boolean
-}
-
 input Blog_heroImage_operator {
   equals: JSON
   not_equals: JSON
@@ -293,14 +263,6 @@ input Blog_content_operator {
   not_equals: JSON
   like: JSON
   contains: JSON
-}
-
-input Blog_content_html_operator {
-  equals: String
-  not_equals: String
-  like: String
-  contains: String
-  exists: Boolean
 }
 
 input Blog_summary_operator {
@@ -405,11 +367,8 @@ input Blog_where_and {
   title: Blog_title_operator
   publishedAt: Blog_publishedAt_operator
   authors: Blog_authors_operator
-  populatedAuthors__id: Blog_populatedAuthors__id_operator
-  populatedAuthors__name: Blog_populatedAuthors__name_operator
   heroImage: Blog_heroImage_operator
   content: Blog_content_operator
-  content_html: Blog_content_html_operator
   summary: Blog_summary_operator
   meta__title: Blog_meta__title_operator
   meta__image: Blog_meta__image_operator
@@ -428,11 +387,8 @@ input Blog_where_or {
   title: Blog_title_operator
   publishedAt: Blog_publishedAt_operator
   authors: Blog_authors_operator
-  populatedAuthors__id: Blog_populatedAuthors__id_operator
-  populatedAuthors__name: Blog_populatedAuthors__name_operator
   heroImage: Blog_heroImage_operator
   content: Blog_content_operator
-  content_html: Blog_content_html_operator
   summary: Blog_summary_operator
   meta__title: Blog_meta__title_operator
   meta__image: Blog_meta__image_operator
@@ -464,10 +420,8 @@ type BlogsDocAccessFields {
   title: BlogsDocAccessFields_title
   publishedAt: BlogsDocAccessFields_publishedAt
   authors: BlogsDocAccessFields_authors
-  populatedAuthors: BlogsDocAccessFields_populatedAuthors
   heroImage: BlogsDocAccessFields_heroImage
   content: BlogsDocAccessFields_content
-  content_html: BlogsDocAccessFields_content_html
   summary: BlogsDocAccessFields_summary
   image: BlogsDocAccessFields_image
   description: BlogsDocAccessFields_description
@@ -547,81 +501,6 @@ type BlogsDocAccessFields_authors_Delete {
   permission: Boolean!
 }
 
-type BlogsDocAccessFields_populatedAuthors {
-  create: BlogsDocAccessFields_populatedAuthors_Create
-  read: BlogsDocAccessFields_populatedAuthors_Read
-  update: BlogsDocAccessFields_populatedAuthors_Update
-  delete: BlogsDocAccessFields_populatedAuthors_Delete
-  fields: BlogsDocAccessFields_populatedAuthors_Fields
-}
-
-type BlogsDocAccessFields_populatedAuthors_Create {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_Read {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_Update {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_Delete {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_Fields {
-  id: BlogsDocAccessFields_populatedAuthors_id
-  name: BlogsDocAccessFields_populatedAuthors_name
-}
-
-type BlogsDocAccessFields_populatedAuthors_id {
-  create: BlogsDocAccessFields_populatedAuthors_id_Create
-  read: BlogsDocAccessFields_populatedAuthors_id_Read
-  update: BlogsDocAccessFields_populatedAuthors_id_Update
-  delete: BlogsDocAccessFields_populatedAuthors_id_Delete
-}
-
-type BlogsDocAccessFields_populatedAuthors_id_Create {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_id_Read {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_id_Update {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_id_Delete {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_name {
-  create: BlogsDocAccessFields_populatedAuthors_name_Create
-  read: BlogsDocAccessFields_populatedAuthors_name_Read
-  update: BlogsDocAccessFields_populatedAuthors_name_Update
-  delete: BlogsDocAccessFields_populatedAuthors_name_Delete
-}
-
-type BlogsDocAccessFields_populatedAuthors_name_Create {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_name_Read {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_name_Update {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_populatedAuthors_name_Delete {
-  permission: Boolean!
-}
-
 type BlogsDocAccessFields_heroImage {
   create: BlogsDocAccessFields_heroImage_Create
   read: BlogsDocAccessFields_heroImage_Read
@@ -665,29 +544,6 @@ type BlogsDocAccessFields_content_Update {
 }
 
 type BlogsDocAccessFields_content_Delete {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_content_html {
-  create: BlogsDocAccessFields_content_html_Create
-  read: BlogsDocAccessFields_content_html_Read
-  update: BlogsDocAccessFields_content_html_Update
-  delete: BlogsDocAccessFields_content_html_Delete
-}
-
-type BlogsDocAccessFields_content_html_Create {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_content_html_Read {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_content_html_Update {
-  permission: Boolean!
-}
-
-type BlogsDocAccessFields_content_html_Delete {
   permission: Boolean!
 }
 
@@ -919,10 +775,8 @@ type BlogVersion_Version {
   title: String
   publishedAt: DateTime
   authors: User
-  populatedAuthors: [BlogVersion_Version_PopulatedAuthors!]
   heroImage: Media
   content(depth: Int): JSON
-  content_html: String
   summary: String
   meta: BlogVersion_Version_Meta
   slug: String
@@ -930,11 +784,6 @@ type BlogVersion_Version {
   updatedAt: DateTime
   createdAt: DateTime
   _status: BlogVersion_Version__status
-}
-
-type BlogVersion_Version_PopulatedAuthors {
-  id: String
-  name: String
 }
 
 type BlogVersion_Version_Meta {
@@ -967,11 +816,8 @@ input versionsBlog_where {
   version__title: versionsBlog_version__title_operator
   version__publishedAt: versionsBlog_version__publishedAt_operator
   version__authors: versionsBlog_version__authors_operator
-  version__populatedAuthors__id: versionsBlog_version__populatedAuthors__id_operator
-  version__populatedAuthors__name: versionsBlog_version__populatedAuthors__name_operator
   version__heroImage: versionsBlog_version__heroImage_operator
   version__content: versionsBlog_version__content_operator
-  version__content_html: versionsBlog_version__content_html_operator
   version__summary: versionsBlog_version__summary_operator
   meta__title: versionsBlog_meta__title_operator
   meta__image: versionsBlog_meta__image_operator
@@ -1028,28 +874,6 @@ input versionsBlog_version__authors_operator {
   exists: Boolean
 }
 
-input versionsBlog_version__populatedAuthors__id_operator {
-  equals: String
-  not_equals: String
-  like: String
-  contains: String
-  in: [String]
-  not_in: [String]
-  all: [String]
-  exists: Boolean
-}
-
-input versionsBlog_version__populatedAuthors__name_operator {
-  equals: String
-  not_equals: String
-  like: String
-  contains: String
-  in: [String]
-  not_in: [String]
-  all: [String]
-  exists: Boolean
-}
-
 input versionsBlog_version__heroImage_operator {
   equals: JSON
   not_equals: JSON
@@ -1064,14 +888,6 @@ input versionsBlog_version__content_operator {
   not_equals: JSON
   like: JSON
   contains: JSON
-}
-
-input versionsBlog_version__content_html_operator {
-  equals: String
-  not_equals: String
-  like: String
-  contains: String
-  exists: Boolean
 }
 
 input versionsBlog_version__summary_operator {
@@ -1211,11 +1027,8 @@ input versionsBlog_where_and {
   version__title: versionsBlog_version__title_operator
   version__publishedAt: versionsBlog_version__publishedAt_operator
   version__authors: versionsBlog_version__authors_operator
-  version__populatedAuthors__id: versionsBlog_version__populatedAuthors__id_operator
-  version__populatedAuthors__name: versionsBlog_version__populatedAuthors__name_operator
   version__heroImage: versionsBlog_version__heroImage_operator
   version__content: versionsBlog_version__content_operator
-  version__content_html: versionsBlog_version__content_html_operator
   version__summary: versionsBlog_version__summary_operator
   meta__title: versionsBlog_meta__title_operator
   meta__image: versionsBlog_meta__image_operator
@@ -1239,11 +1052,8 @@ input versionsBlog_where_or {
   version__title: versionsBlog_version__title_operator
   version__publishedAt: versionsBlog_version__publishedAt_operator
   version__authors: versionsBlog_version__authors_operator
-  version__populatedAuthors__id: versionsBlog_version__populatedAuthors__id_operator
-  version__populatedAuthors__name: versionsBlog_version__populatedAuthors__name_operator
   version__heroImage: versionsBlog_version__heroImage_operator
   version__content: versionsBlog_version__content_operator
-  version__content_html: versionsBlog_version__content_html_operator
   version__summary: versionsBlog_version__summary_operator
   meta__title: versionsBlog_meta__title_operator
   meta__image: versionsBlog_meta__image_operator
@@ -1469,21 +1279,35 @@ type usersMe {
 type Project {
   id: Int!
   slug: String
-  name: String!
-  image: Media!
+  slugLock: Boolean
+  name: String
+  publishedAt: DateTime
+  image: Media
   technologies: [Project_Technologies!]!
-  description: String!
   url: String
   github: String
   content(depth: Int): JSON
-  content_html: String
+  description: String
+  meta: Project_Meta
   updatedAt: DateTime
   createdAt: DateTime
+  _status: Project__status
 }
 
 type Project_Technologies {
-  name: String
+  name: String!
   id: String
+}
+
+type Project_Meta {
+  title: String
+  image: Media
+  description: String
+}
+
+enum Project__status {
+  draft
+  published
 }
 
 type Projects {
@@ -1502,17 +1326,22 @@ type Projects {
 
 input Project_where {
   slug: Project_slug_operator
+  slugLock: Project_slugLock_operator
   name: Project_name_operator
+  publishedAt: Project_publishedAt_operator
   image: Project_image_operator
   technologies__name: Project_technologies__name_operator
   technologies__id: Project_technologies__id_operator
-  description: Project_description_operator
   url: Project_url_operator
   github: Project_github_operator
   content: Project_content_operator
-  content_html: Project_content_html_operator
+  description: Project_description_operator
+  meta__title: Project_meta__title_operator
+  meta__image: Project_meta__image_operator
+  meta__description: Project_meta__description_operator
   updatedAt: Project_updatedAt_operator
   createdAt: Project_createdAt_operator
+  _status: Project__status_operator
   id: Project_id_operator
   AND: [Project_where_and]
   OR: [Project_where_or]
@@ -1529,6 +1358,12 @@ input Project_slug_operator {
   exists: Boolean
 }
 
+input Project_slugLock_operator {
+  equals: Boolean
+  not_equals: Boolean
+  exists: Boolean
+}
+
 input Project_name_operator {
   equals: String
   not_equals: String
@@ -1537,6 +1372,16 @@ input Project_name_operator {
   in: [String]
   not_in: [String]
   all: [String]
+}
+
+input Project_publishedAt_operator {
+  equals: DateTime
+  not_equals: DateTime
+  greater_than_equal: DateTime
+  greater_than: DateTime
+  less_than_equal: DateTime
+  less_than: DateTime
+  like: DateTime
 }
 
 input Project_image_operator {
@@ -1568,13 +1413,6 @@ input Project_technologies__id_operator {
   exists: Boolean
 }
 
-input Project_description_operator {
-  equals: String
-  not_equals: String
-  like: String
-  contains: String
-}
-
 input Project_url_operator {
   equals: String
   not_equals: String
@@ -1602,10 +1440,36 @@ input Project_content_operator {
   not_equals: JSON
   like: JSON
   contains: JSON
+}
+
+input Project_description_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+}
+
+input Project_meta__title_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
   exists: Boolean
 }
 
-input Project_content_html_operator {
+input Project_meta__image_operator {
+  equals: JSON
+  not_equals: JSON
+  in: [JSON]
+  not_in: [JSON]
+  all: [JSON]
+  exists: Boolean
+}
+
+input Project_meta__description_operator {
   equals: String
   not_equals: String
   like: String
@@ -1635,6 +1499,20 @@ input Project_createdAt_operator {
   exists: Boolean
 }
 
+input Project__status_operator {
+  equals: Project__status_Input
+  not_equals: Project__status_Input
+  in: [Project__status_Input]
+  not_in: [Project__status_Input]
+  all: [Project__status_Input]
+  exists: Boolean
+}
+
+enum Project__status_Input {
+  draft
+  published
+}
+
 input Project_id_operator {
   equals: Int
   not_equals: Int
@@ -1647,17 +1525,22 @@ input Project_id_operator {
 
 input Project_where_and {
   slug: Project_slug_operator
+  slugLock: Project_slugLock_operator
   name: Project_name_operator
+  publishedAt: Project_publishedAt_operator
   image: Project_image_operator
   technologies__name: Project_technologies__name_operator
   technologies__id: Project_technologies__id_operator
-  description: Project_description_operator
   url: Project_url_operator
   github: Project_github_operator
   content: Project_content_operator
-  content_html: Project_content_html_operator
+  description: Project_description_operator
+  meta__title: Project_meta__title_operator
+  meta__image: Project_meta__image_operator
+  meta__description: Project_meta__description_operator
   updatedAt: Project_updatedAt_operator
   createdAt: Project_createdAt_operator
+  _status: Project__status_operator
   id: Project_id_operator
   AND: [Project_where_and]
   OR: [Project_where_or]
@@ -1665,17 +1548,22 @@ input Project_where_and {
 
 input Project_where_or {
   slug: Project_slug_operator
+  slugLock: Project_slugLock_operator
   name: Project_name_operator
+  publishedAt: Project_publishedAt_operator
   image: Project_image_operator
   technologies__name: Project_technologies__name_operator
   technologies__id: Project_technologies__id_operator
-  description: Project_description_operator
   url: Project_url_operator
   github: Project_github_operator
   content: Project_content_operator
-  content_html: Project_content_html_operator
+  description: Project_description_operator
+  meta__title: Project_meta__title_operator
+  meta__image: Project_meta__image_operator
+  meta__description: Project_meta__description_operator
   updatedAt: Project_updatedAt_operator
   createdAt: Project_createdAt_operator
+  _status: Project__status_operator
   id: Project_id_operator
   AND: [Project_where_and]
   OR: [Project_where_or]
@@ -1691,20 +1579,24 @@ type projectsDocAccess {
   read: ProjectsReadDocAccess
   update: ProjectsUpdateDocAccess
   delete: ProjectsDeleteDocAccess
+  readVersions: ProjectsReadVersionsDocAccess
 }
 
 type ProjectsDocAccessFields {
   slug: ProjectsDocAccessFields_slug
+  slugLock: ProjectsDocAccessFields_slugLock
   name: ProjectsDocAccessFields_name
+  publishedAt: ProjectsDocAccessFields_publishedAt
   image: ProjectsDocAccessFields_image
   technologies: ProjectsDocAccessFields_technologies
-  description: ProjectsDocAccessFields_description
   url: ProjectsDocAccessFields_url
   github: ProjectsDocAccessFields_github
   content: ProjectsDocAccessFields_content
-  content_html: ProjectsDocAccessFields_content_html
+  description: ProjectsDocAccessFields_description
+  title: ProjectsDocAccessFields_title
   updatedAt: ProjectsDocAccessFields_updatedAt
   createdAt: ProjectsDocAccessFields_createdAt
+  _status: ProjectsDocAccessFields__status
 }
 
 type ProjectsDocAccessFields_slug {
@@ -1730,6 +1622,29 @@ type ProjectsDocAccessFields_slug_Delete {
   permission: Boolean!
 }
 
+type ProjectsDocAccessFields_slugLock {
+  create: ProjectsDocAccessFields_slugLock_Create
+  read: ProjectsDocAccessFields_slugLock_Read
+  update: ProjectsDocAccessFields_slugLock_Update
+  delete: ProjectsDocAccessFields_slugLock_Delete
+}
+
+type ProjectsDocAccessFields_slugLock_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_slugLock_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_slugLock_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_slugLock_Delete {
+  permission: Boolean!
+}
+
 type ProjectsDocAccessFields_name {
   create: ProjectsDocAccessFields_name_Create
   read: ProjectsDocAccessFields_name_Read
@@ -1750,6 +1665,29 @@ type ProjectsDocAccessFields_name_Update {
 }
 
 type ProjectsDocAccessFields_name_Delete {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_publishedAt {
+  create: ProjectsDocAccessFields_publishedAt_Create
+  read: ProjectsDocAccessFields_publishedAt_Read
+  update: ProjectsDocAccessFields_publishedAt_Update
+  delete: ProjectsDocAccessFields_publishedAt_Delete
+}
+
+type ProjectsDocAccessFields_publishedAt_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_publishedAt_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_publishedAt_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_publishedAt_Delete {
   permission: Boolean!
 }
 
@@ -1851,29 +1789,6 @@ type ProjectsDocAccessFields_technologies_id_Delete {
   permission: Boolean!
 }
 
-type ProjectsDocAccessFields_description {
-  create: ProjectsDocAccessFields_description_Create
-  read: ProjectsDocAccessFields_description_Read
-  update: ProjectsDocAccessFields_description_Update
-  delete: ProjectsDocAccessFields_description_Delete
-}
-
-type ProjectsDocAccessFields_description_Create {
-  permission: Boolean!
-}
-
-type ProjectsDocAccessFields_description_Read {
-  permission: Boolean!
-}
-
-type ProjectsDocAccessFields_description_Update {
-  permission: Boolean!
-}
-
-type ProjectsDocAccessFields_description_Delete {
-  permission: Boolean!
-}
-
 type ProjectsDocAccessFields_url {
   create: ProjectsDocAccessFields_url_Create
   read: ProjectsDocAccessFields_url_Read
@@ -1943,26 +1858,49 @@ type ProjectsDocAccessFields_content_Delete {
   permission: Boolean!
 }
 
-type ProjectsDocAccessFields_content_html {
-  create: ProjectsDocAccessFields_content_html_Create
-  read: ProjectsDocAccessFields_content_html_Read
-  update: ProjectsDocAccessFields_content_html_Update
-  delete: ProjectsDocAccessFields_content_html_Delete
+type ProjectsDocAccessFields_description {
+  create: ProjectsDocAccessFields_description_Create
+  read: ProjectsDocAccessFields_description_Read
+  update: ProjectsDocAccessFields_description_Update
+  delete: ProjectsDocAccessFields_description_Delete
 }
 
-type ProjectsDocAccessFields_content_html_Create {
+type ProjectsDocAccessFields_description_Create {
   permission: Boolean!
 }
 
-type ProjectsDocAccessFields_content_html_Read {
+type ProjectsDocAccessFields_description_Read {
   permission: Boolean!
 }
 
-type ProjectsDocAccessFields_content_html_Update {
+type ProjectsDocAccessFields_description_Update {
   permission: Boolean!
 }
 
-type ProjectsDocAccessFields_content_html_Delete {
+type ProjectsDocAccessFields_description_Delete {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_title {
+  create: ProjectsDocAccessFields_title_Create
+  read: ProjectsDocAccessFields_title_Read
+  update: ProjectsDocAccessFields_title_Update
+  delete: ProjectsDocAccessFields_title_Delete
+}
+
+type ProjectsDocAccessFields_title_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_title_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_title_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields_title_Delete {
   permission: Boolean!
 }
 
@@ -2012,6 +1950,29 @@ type ProjectsDocAccessFields_createdAt_Delete {
   permission: Boolean!
 }
 
+type ProjectsDocAccessFields__status {
+  create: ProjectsDocAccessFields__status_Create
+  read: ProjectsDocAccessFields__status_Read
+  update: ProjectsDocAccessFields__status_Update
+  delete: ProjectsDocAccessFields__status_Delete
+}
+
+type ProjectsDocAccessFields__status_Create {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields__status_Read {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields__status_Update {
+  permission: Boolean!
+}
+
+type ProjectsDocAccessFields__status_Delete {
+  permission: Boolean!
+}
+
 type ProjectsCreateDocAccess {
   permission: Boolean!
   where: JSONObject
@@ -2030,6 +1991,371 @@ type ProjectsUpdateDocAccess {
 type ProjectsDeleteDocAccess {
   permission: Boolean!
   where: JSONObject
+}
+
+type ProjectsReadVersionsDocAccess {
+  permission: Boolean!
+  where: JSONObject
+}
+
+type ProjectVersion {
+  parent(draft: Boolean): Project
+  version: ProjectVersion_Version
+  createdAt: DateTime
+  updatedAt: DateTime
+  latest: Boolean
+  autosave: Boolean
+  id: Int
+}
+
+type ProjectVersion_Version {
+  slug: String
+  slugLock: Boolean
+  name: String
+  publishedAt: DateTime
+  image: Media
+  technologies: [ProjectVersion_Version_Technologies!]!
+  url: String
+  github: String
+  content(depth: Int): JSON
+  description: String
+  meta: ProjectVersion_Version_Meta
+  updatedAt: DateTime
+  createdAt: DateTime
+  _status: ProjectVersion_Version__status
+}
+
+type ProjectVersion_Version_Technologies {
+  name: String!
+  id: String
+}
+
+type ProjectVersion_Version_Meta {
+  title: String
+  image: Media
+  description: String
+}
+
+enum ProjectVersion_Version__status {
+  draft
+  published
+}
+
+type versionsProjects {
+  docs: [ProjectVersion]
+  hasNextPage: Boolean
+  hasPrevPage: Boolean
+  limit: Int
+  nextPage: Int
+  offset: Int
+  page: Int
+  pagingCounter: Int
+  prevPage: Int
+  totalDocs: Int
+  totalPages: Int
+}
+
+input versionsProject_where {
+  parent: versionsProject_parent_operator
+  version__slug: versionsProject_version__slug_operator
+  version__slugLock: versionsProject_version__slugLock_operator
+  version__name: versionsProject_version__name_operator
+  version__publishedAt: versionsProject_version__publishedAt_operator
+  version__image: versionsProject_version__image_operator
+  version__technologies__name: versionsProject_version__technologies__name_operator
+  version__technologies__id: versionsProject_version__technologies__id_operator
+  version__url: versionsProject_version__url_operator
+  version__github: versionsProject_version__github_operator
+  version__content: versionsProject_version__content_operator
+  version__description: versionsProject_version__description_operator
+  meta__title: versionsProject_meta__title_operator
+  meta__image: versionsProject_meta__image_operator
+  meta__description: versionsProject_meta__description_operator
+  version__updatedAt: versionsProject_version__updatedAt_operator
+  version__createdAt: versionsProject_version__createdAt_operator
+  version___status: versionsProject_version___status_operator
+  createdAt: versionsProject_createdAt_operator
+  updatedAt: versionsProject_updatedAt_operator
+  latest: versionsProject_latest_operator
+  autosave: versionsProject_autosave_operator
+  id: versionsProject_id_operator
+  AND: [versionsProject_where_and]
+  OR: [versionsProject_where_or]
+}
+
+input versionsProject_parent_operator {
+  equals: JSON
+  not_equals: JSON
+  in: [JSON]
+  not_in: [JSON]
+  all: [JSON]
+  exists: Boolean
+}
+
+input versionsProject_version__slug_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+  exists: Boolean
+}
+
+input versionsProject_version__slugLock_operator {
+  equals: Boolean
+  not_equals: Boolean
+  exists: Boolean
+}
+
+input versionsProject_version__name_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+}
+
+input versionsProject_version__publishedAt_operator {
+  equals: DateTime
+  not_equals: DateTime
+  greater_than_equal: DateTime
+  greater_than: DateTime
+  less_than_equal: DateTime
+  less_than: DateTime
+  like: DateTime
+}
+
+input versionsProject_version__image_operator {
+  equals: JSON
+  not_equals: JSON
+  in: [JSON]
+  not_in: [JSON]
+  all: [JSON]
+}
+
+input versionsProject_version__technologies__name_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+}
+
+input versionsProject_version__technologies__id_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+  exists: Boolean
+}
+
+input versionsProject_version__url_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+  exists: Boolean
+}
+
+input versionsProject_version__github_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+  exists: Boolean
+}
+
+input versionsProject_version__content_operator {
+  equals: JSON
+  not_equals: JSON
+  like: JSON
+  contains: JSON
+}
+
+input versionsProject_version__description_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+}
+
+input versionsProject_meta__title_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  in: [String]
+  not_in: [String]
+  all: [String]
+  exists: Boolean
+}
+
+input versionsProject_meta__image_operator {
+  equals: JSON
+  not_equals: JSON
+  in: [JSON]
+  not_in: [JSON]
+  all: [JSON]
+  exists: Boolean
+}
+
+input versionsProject_meta__description_operator {
+  equals: String
+  not_equals: String
+  like: String
+  contains: String
+  exists: Boolean
+}
+
+input versionsProject_version__updatedAt_operator {
+  equals: DateTime
+  not_equals: DateTime
+  greater_than_equal: DateTime
+  greater_than: DateTime
+  less_than_equal: DateTime
+  less_than: DateTime
+  like: DateTime
+  exists: Boolean
+}
+
+input versionsProject_version__createdAt_operator {
+  equals: DateTime
+  not_equals: DateTime
+  greater_than_equal: DateTime
+  greater_than: DateTime
+  less_than_equal: DateTime
+  less_than: DateTime
+  like: DateTime
+  exists: Boolean
+}
+
+input versionsProject_version___status_operator {
+  equals: versionsProject_version___status_Input
+  not_equals: versionsProject_version___status_Input
+  in: [versionsProject_version___status_Input]
+  not_in: [versionsProject_version___status_Input]
+  all: [versionsProject_version___status_Input]
+  exists: Boolean
+}
+
+enum versionsProject_version___status_Input {
+  draft
+  published
+}
+
+input versionsProject_createdAt_operator {
+  equals: DateTime
+  not_equals: DateTime
+  greater_than_equal: DateTime
+  greater_than: DateTime
+  less_than_equal: DateTime
+  less_than: DateTime
+  like: DateTime
+  exists: Boolean
+}
+
+input versionsProject_updatedAt_operator {
+  equals: DateTime
+  not_equals: DateTime
+  greater_than_equal: DateTime
+  greater_than: DateTime
+  less_than_equal: DateTime
+  less_than: DateTime
+  like: DateTime
+  exists: Boolean
+}
+
+input versionsProject_latest_operator {
+  equals: Boolean
+  not_equals: Boolean
+  exists: Boolean
+}
+
+input versionsProject_autosave_operator {
+  equals: Boolean
+  not_equals: Boolean
+  exists: Boolean
+}
+
+input versionsProject_id_operator {
+  equals: Int
+  not_equals: Int
+  greater_than_equal: Int
+  greater_than: Int
+  less_than_equal: Int
+  less_than: Int
+  exists: Boolean
+}
+
+input versionsProject_where_and {
+  parent: versionsProject_parent_operator
+  version__slug: versionsProject_version__slug_operator
+  version__slugLock: versionsProject_version__slugLock_operator
+  version__name: versionsProject_version__name_operator
+  version__publishedAt: versionsProject_version__publishedAt_operator
+  version__image: versionsProject_version__image_operator
+  version__technologies__name: versionsProject_version__technologies__name_operator
+  version__technologies__id: versionsProject_version__technologies__id_operator
+  version__url: versionsProject_version__url_operator
+  version__github: versionsProject_version__github_operator
+  version__content: versionsProject_version__content_operator
+  version__description: versionsProject_version__description_operator
+  meta__title: versionsProject_meta__title_operator
+  meta__image: versionsProject_meta__image_operator
+  meta__description: versionsProject_meta__description_operator
+  version__updatedAt: versionsProject_version__updatedAt_operator
+  version__createdAt: versionsProject_version__createdAt_operator
+  version___status: versionsProject_version___status_operator
+  createdAt: versionsProject_createdAt_operator
+  updatedAt: versionsProject_updatedAt_operator
+  latest: versionsProject_latest_operator
+  autosave: versionsProject_autosave_operator
+  id: versionsProject_id_operator
+  AND: [versionsProject_where_and]
+  OR: [versionsProject_where_or]
+}
+
+input versionsProject_where_or {
+  parent: versionsProject_parent_operator
+  version__slug: versionsProject_version__slug_operator
+  version__slugLock: versionsProject_version__slugLock_operator
+  version__name: versionsProject_version__name_operator
+  version__publishedAt: versionsProject_version__publishedAt_operator
+  version__image: versionsProject_version__image_operator
+  version__technologies__name: versionsProject_version__technologies__name_operator
+  version__technologies__id: versionsProject_version__technologies__id_operator
+  version__url: versionsProject_version__url_operator
+  version__github: versionsProject_version__github_operator
+  version__content: versionsProject_version__content_operator
+  version__description: versionsProject_version__description_operator
+  meta__title: versionsProject_meta__title_operator
+  meta__image: versionsProject_meta__image_operator
+  meta__description: versionsProject_meta__description_operator
+  version__updatedAt: versionsProject_version__updatedAt_operator
+  version__createdAt: versionsProject_version__createdAt_operator
+  version___status: versionsProject_version___status_operator
+  createdAt: versionsProject_createdAt_operator
+  updatedAt: versionsProject_updatedAt_operator
+  latest: versionsProject_latest_operator
+  autosave: versionsProject_autosave_operator
+  id: versionsProject_id_operator
+  AND: [versionsProject_where_and]
+  OR: [versionsProject_where_or]
 }
 
 type allMedia {
@@ -6482,10 +6808,8 @@ type BlogsFields {
   title: BlogsFields_title
   publishedAt: BlogsFields_publishedAt
   authors: BlogsFields_authors
-  populatedAuthors: BlogsFields_populatedAuthors
   heroImage: BlogsFields_heroImage
   content: BlogsFields_content
-  content_html: BlogsFields_content_html
   summary: BlogsFields_summary
   image: BlogsFields_image
   description: BlogsFields_description
@@ -6565,81 +6889,6 @@ type BlogsFields_authors_Delete {
   permission: Boolean!
 }
 
-type BlogsFields_populatedAuthors {
-  create: BlogsFields_populatedAuthors_Create
-  read: BlogsFields_populatedAuthors_Read
-  update: BlogsFields_populatedAuthors_Update
-  delete: BlogsFields_populatedAuthors_Delete
-  fields: BlogsFields_populatedAuthors_Fields
-}
-
-type BlogsFields_populatedAuthors_Create {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_Read {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_Update {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_Delete {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_Fields {
-  id: BlogsFields_populatedAuthors_id
-  name: BlogsFields_populatedAuthors_name
-}
-
-type BlogsFields_populatedAuthors_id {
-  create: BlogsFields_populatedAuthors_id_Create
-  read: BlogsFields_populatedAuthors_id_Read
-  update: BlogsFields_populatedAuthors_id_Update
-  delete: BlogsFields_populatedAuthors_id_Delete
-}
-
-type BlogsFields_populatedAuthors_id_Create {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_id_Read {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_id_Update {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_id_Delete {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_name {
-  create: BlogsFields_populatedAuthors_name_Create
-  read: BlogsFields_populatedAuthors_name_Read
-  update: BlogsFields_populatedAuthors_name_Update
-  delete: BlogsFields_populatedAuthors_name_Delete
-}
-
-type BlogsFields_populatedAuthors_name_Create {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_name_Read {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_name_Update {
-  permission: Boolean!
-}
-
-type BlogsFields_populatedAuthors_name_Delete {
-  permission: Boolean!
-}
-
 type BlogsFields_heroImage {
   create: BlogsFields_heroImage_Create
   read: BlogsFields_heroImage_Read
@@ -6683,29 +6932,6 @@ type BlogsFields_content_Update {
 }
 
 type BlogsFields_content_Delete {
-  permission: Boolean!
-}
-
-type BlogsFields_content_html {
-  create: BlogsFields_content_html_Create
-  read: BlogsFields_content_html_Read
-  update: BlogsFields_content_html_Update
-  delete: BlogsFields_content_html_Delete
-}
-
-type BlogsFields_content_html_Create {
-  permission: Boolean!
-}
-
-type BlogsFields_content_html_Read {
-  permission: Boolean!
-}
-
-type BlogsFields_content_html_Update {
-  permission: Boolean!
-}
-
-type BlogsFields_content_html_Delete {
   permission: Boolean!
 }
 
@@ -7033,20 +7259,24 @@ type projectsAccess {
   read: ProjectsReadAccess
   update: ProjectsUpdateAccess
   delete: ProjectsDeleteAccess
+  readVersions: ProjectsReadVersionsAccess
 }
 
 type ProjectsFields {
   slug: ProjectsFields_slug
+  slugLock: ProjectsFields_slugLock
   name: ProjectsFields_name
+  publishedAt: ProjectsFields_publishedAt
   image: ProjectsFields_image
   technologies: ProjectsFields_technologies
-  description: ProjectsFields_description
   url: ProjectsFields_url
   github: ProjectsFields_github
   content: ProjectsFields_content
-  content_html: ProjectsFields_content_html
+  description: ProjectsFields_description
+  title: ProjectsFields_title
   updatedAt: ProjectsFields_updatedAt
   createdAt: ProjectsFields_createdAt
+  _status: ProjectsFields__status
 }
 
 type ProjectsFields_slug {
@@ -7072,6 +7302,29 @@ type ProjectsFields_slug_Delete {
   permission: Boolean!
 }
 
+type ProjectsFields_slugLock {
+  create: ProjectsFields_slugLock_Create
+  read: ProjectsFields_slugLock_Read
+  update: ProjectsFields_slugLock_Update
+  delete: ProjectsFields_slugLock_Delete
+}
+
+type ProjectsFields_slugLock_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_slugLock_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_slugLock_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_slugLock_Delete {
+  permission: Boolean!
+}
+
 type ProjectsFields_name {
   create: ProjectsFields_name_Create
   read: ProjectsFields_name_Read
@@ -7092,6 +7345,29 @@ type ProjectsFields_name_Update {
 }
 
 type ProjectsFields_name_Delete {
+  permission: Boolean!
+}
+
+type ProjectsFields_publishedAt {
+  create: ProjectsFields_publishedAt_Create
+  read: ProjectsFields_publishedAt_Read
+  update: ProjectsFields_publishedAt_Update
+  delete: ProjectsFields_publishedAt_Delete
+}
+
+type ProjectsFields_publishedAt_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_publishedAt_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_publishedAt_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_publishedAt_Delete {
   permission: Boolean!
 }
 
@@ -7193,29 +7469,6 @@ type ProjectsFields_technologies_id_Delete {
   permission: Boolean!
 }
 
-type ProjectsFields_description {
-  create: ProjectsFields_description_Create
-  read: ProjectsFields_description_Read
-  update: ProjectsFields_description_Update
-  delete: ProjectsFields_description_Delete
-}
-
-type ProjectsFields_description_Create {
-  permission: Boolean!
-}
-
-type ProjectsFields_description_Read {
-  permission: Boolean!
-}
-
-type ProjectsFields_description_Update {
-  permission: Boolean!
-}
-
-type ProjectsFields_description_Delete {
-  permission: Boolean!
-}
-
 type ProjectsFields_url {
   create: ProjectsFields_url_Create
   read: ProjectsFields_url_Read
@@ -7285,26 +7538,49 @@ type ProjectsFields_content_Delete {
   permission: Boolean!
 }
 
-type ProjectsFields_content_html {
-  create: ProjectsFields_content_html_Create
-  read: ProjectsFields_content_html_Read
-  update: ProjectsFields_content_html_Update
-  delete: ProjectsFields_content_html_Delete
+type ProjectsFields_description {
+  create: ProjectsFields_description_Create
+  read: ProjectsFields_description_Read
+  update: ProjectsFields_description_Update
+  delete: ProjectsFields_description_Delete
 }
 
-type ProjectsFields_content_html_Create {
+type ProjectsFields_description_Create {
   permission: Boolean!
 }
 
-type ProjectsFields_content_html_Read {
+type ProjectsFields_description_Read {
   permission: Boolean!
 }
 
-type ProjectsFields_content_html_Update {
+type ProjectsFields_description_Update {
   permission: Boolean!
 }
 
-type ProjectsFields_content_html_Delete {
+type ProjectsFields_description_Delete {
+  permission: Boolean!
+}
+
+type ProjectsFields_title {
+  create: ProjectsFields_title_Create
+  read: ProjectsFields_title_Read
+  update: ProjectsFields_title_Update
+  delete: ProjectsFields_title_Delete
+}
+
+type ProjectsFields_title_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields_title_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields_title_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields_title_Delete {
   permission: Boolean!
 }
 
@@ -7354,6 +7630,29 @@ type ProjectsFields_createdAt_Delete {
   permission: Boolean!
 }
 
+type ProjectsFields__status {
+  create: ProjectsFields__status_Create
+  read: ProjectsFields__status_Read
+  update: ProjectsFields__status_Update
+  delete: ProjectsFields__status_Delete
+}
+
+type ProjectsFields__status_Create {
+  permission: Boolean!
+}
+
+type ProjectsFields__status_Read {
+  permission: Boolean!
+}
+
+type ProjectsFields__status_Update {
+  permission: Boolean!
+}
+
+type ProjectsFields__status_Delete {
+  permission: Boolean!
+}
+
 type ProjectsCreateAccess {
   permission: Boolean!
   where: JSONObject
@@ -7370,6 +7669,11 @@ type ProjectsUpdateAccess {
 }
 
 type ProjectsDeleteAccess {
+  permission: Boolean!
+  where: JSONObject
+}
+
+type ProjectsReadVersionsAccess {
   permission: Boolean!
   where: JSONObject
 }
@@ -10153,6 +10457,7 @@ type Mutation {
   updateProject(id: Int!, autosave: Boolean, data: mutationProjectUpdateInput!, draft: Boolean): Project
   deleteProject(id: Int!): Project
   duplicateProject(id: Int!, data: mutationProjectInput!): Project
+  restoreVersionProject(id: Int, draft: Boolean): Project
   createMedia(data: mutationMediaInput!, draft: Boolean): Media
   updateMedia(id: Int!, autosave: Boolean, data: mutationMediaUpdateInput!, draft: Boolean): Media
   deleteMedia(id: Int!): Media
@@ -10179,10 +10484,8 @@ input mutationBlogInput {
   title: String!
   publishedAt: String!
   authors: Int
-  populatedAuthors: [mutationBlog_PopulatedAuthorsInput]
   heroImage: Int
   content: JSON!
-  content_html: String
   summary: String!
   meta: mutationBlog_MetaInput
   slug: String
@@ -10190,11 +10493,6 @@ input mutationBlogInput {
   updatedAt: String
   createdAt: String
   _status: Blog__status_MutationInput
-}
-
-input mutationBlog_PopulatedAuthorsInput {
-  id: String
-  name: String
 }
 
 input mutationBlog_MetaInput {
@@ -10212,10 +10510,8 @@ input mutationBlogUpdateInput {
   title: String
   publishedAt: String
   authors: Int
-  populatedAuthors: [mutationBlogUpdate_PopulatedAuthorsInput]
   heroImage: Int
   content: JSON
-  content_html: String
   summary: String
   meta: mutationBlogUpdate_MetaInput
   slug: String
@@ -10223,11 +10519,6 @@ input mutationBlogUpdateInput {
   updatedAt: String
   createdAt: String
   _status: BlogUpdate__status_MutationInput
-}
-
-input mutationBlogUpdate_PopulatedAuthorsInput {
-  id: String
-  name: String
 }
 
 input mutationBlogUpdate_MetaInput {
@@ -10292,16 +10583,19 @@ type usersResetPassword {
 
 input mutationProjectInput {
   slug: String
+  slugLock: Boolean
   name: String!
+  publishedAt: String!
   image: Int
   technologies: [mutationProject_TechnologiesInput!]
-  description: String!
   url: String
   github: String
-  content: JSON
-  content_html: String
+  content: JSON!
+  description: String!
+  meta: mutationProject_MetaInput
   updatedAt: String
   createdAt: String
+  _status: Project__status_MutationInput
 }
 
 input mutationProject_TechnologiesInput {
@@ -10309,23 +10603,48 @@ input mutationProject_TechnologiesInput {
   id: String
 }
 
+input mutationProject_MetaInput {
+  title: String
+  image: Int
+  description: String
+}
+
+enum Project__status_MutationInput {
+  draft
+  published
+}
+
 input mutationProjectUpdateInput {
   slug: String
+  slugLock: Boolean
   name: String
+  publishedAt: String
   image: Int
   technologies: [mutationProjectUpdate_TechnologiesInput]
-  description: String
   url: String
   github: String
   content: JSON
-  content_html: String
+  description: String
+  meta: mutationProjectUpdate_MetaInput
   updatedAt: String
   createdAt: String
+  _status: ProjectUpdate__status_MutationInput
 }
 
 input mutationProjectUpdate_TechnologiesInput {
   name: String!
   id: String
+}
+
+input mutationProjectUpdate_MetaInput {
+  title: String
+  image: Int
+  description: String
+}
+
+enum ProjectUpdate__status_MutationInput {
+  draft
+  published
 }
 
 input mutationMediaInput {

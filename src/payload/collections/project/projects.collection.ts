@@ -1,3 +1,16 @@
+import { authenticated } from '@/payload/access/authenticated'
+import { authenticatedOrPublished } from '@/payload/access/authenticatedOrPublished'
+import { slugField } from '@/payload/collections/blog/slug.field'
+import { generatePreviewPath } from '@/utils/generatePreviewPath'
+import { isValidUrl } from '@/utils/isValidUrl'
+import {
+  MetaDescriptionField,
+  MetaImageField,
+  MetaTitleField,
+  OverviewField,
+  PreviewField,
+} from '@payloadcms/plugin-seo/fields'
+import { CollectionConfig } from 'payload'
 import {
   BlocksFeature,
   FixedToolbarFeature,
@@ -11,33 +24,46 @@ import {
   IndentFeature,
   InlineCodeFeature,
 } from '@payloadcms/richtext-lexical'
-import { CollectionConfig } from 'payload'
-import {
-  MetaDescriptionField,
-  MetaImageField,
-  MetaTitleField,
-  OverviewField,
-  PreviewField,
-} from '@payloadcms/plugin-seo/fields'
 import { Code } from '@/payload/blocks/Code/config'
 import { MediaBlock } from '@/payload/blocks/MediaBlock/config'
-import { authenticated } from '@/payload/access/authenticated'
-import { authenticatedOrPublished } from '@/payload/access/authenticatedOrPublished'
-import { slugField } from '@/payload/collections/blog/slug.field'
-import { generatePreviewPath } from '@/utils/generatePreviewPath'
-import { revalidateBlog, revalidateDelete } from '@/payload/collections/blog/hooks/revalidate'
+import {
+  revalidateProject,
+  revalidateProjectDelete,
+} from '@/payload/collections/project/hooks/revalidate'
 
-export const BlogCollection: CollectionConfig = {
-  slug: 'blogs',
+export const ProjectsCollection: CollectionConfig = {
+  slug: 'projects',
+  access: {
+    create: authenticated,
+    delete: authenticated,
+    read: authenticatedOrPublished,
+    update: authenticated,
+  },
+  defaultSort: '-publishedAt',
+  versions: {
+    drafts: {
+      autosave: {
+        interval: 100, // We set this interval for optimal live preview
+      },
+      schedulePublish: true,
+    },
+    maxPerDoc: 50,
+  },
+  hooks: {
+    afterChange: [revalidateProject],
+    afterDelete: [revalidateProjectDelete],
+  },
   admin: {
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    useAsTitle: 'name',
     livePreview: {
       url: ({ data, req }) => {
         const path = generatePreviewPath({
           slug: typeof data?.slug === 'string' ? data.slug : '',
-          collection: 'blogs',
+          collection: 'projects',
           req,
         })
+
+        req.payload.logger.info(`${path} live preview deosnt work here`)
 
         return path
       },
@@ -45,29 +71,14 @@ export const BlogCollection: CollectionConfig = {
     preview: (data, { req }) =>
       generatePreviewPath({
         slug: typeof data?.slug === 'string' ? data.slug : '',
-        collection: 'blogs',
+        collection: 'projects',
         req,
       }),
-    useAsTitle: 'title',
   },
-  access: {
-    create: authenticated,
-    delete: authenticated,
-    read: authenticatedOrPublished,
-    update: authenticated,
-  },
-  // defaultPopulate: {
-  //   title: true,
-  //   slug: true,
-  //   meta: {
-  //     image: true,
-  //     description: true,
-  //   },
-  // },
-  defaultSort: '-publishedAt',
   fields: [
+    ...slugField('name'),
     {
-      name: 'title',
+      name: 'name',
       type: 'text',
       required: true,
     },
@@ -93,34 +104,47 @@ export const BlogCollection: CollectionConfig = {
       },
     },
     {
-      name: 'authors',
-      type: 'relationship',
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      required: true,
+    },
+    {
+      name: 'technologies',
+      type: 'array',
       admin: {
         position: 'sidebar',
       },
-      relationTo: 'users',
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+        },
+      ],
+      required: true,
     },
-    // {
-    //   name: 'populatedAuthors',
-    //   type: 'array',
-    //   access: {
-    //     update: () => false,
-    //   },
-    //   admin: {
-    //     disabled: true,
-    //     readOnly: true,
-    //   },
-    //   fields: [
-    //     {
-    //       name: 'id',
-    //       type: 'text',
-    //     },
-    //     {
-    //       name: 'name',
-    //       type: 'text',
-    //     },
-    //   ],
-    // },
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'url',
+          type: 'text',
+          admin: {
+            position: 'sidebar',
+          },
+          validate: (value: any) => (isValidUrl(value) ? true : 'This is not a URL'),
+        },
+        {
+          name: 'github',
+          type: 'text',
+          admin: {
+            position: 'sidebar',
+          },
+          validate: (value: any) => (isValidUrl(value) ? true : 'This is not a URL'),
+        },
+      ],
+    },
     {
       type: 'tabs',
       tabs: [
@@ -128,30 +152,10 @@ export const BlogCollection: CollectionConfig = {
           label: 'Content',
           fields: [
             {
-              name: 'heroImage',
-              type: 'upload',
-              relationTo: 'media',
-            },
-            {
               name: 'content',
               type: 'richText',
               label: false,
               required: true,
-              // editor: lexicalEditor({
-              //   features: ({ defaultFeatures }) => [
-              //     ...defaultFeatures,
-              //     HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
-              //     BlocksFeature({
-              //       blocks: [Code, MediaBlock, File, Embed],
-              //       inlineBlocks: [Code, MediaBlock, File, Embed],
-              //     }),
-
-              //     FixedToolbarFeature(),
-              //     InlineToolbarFeature(),
-              //     HorizontalRuleFeature(),
-              //     HTMLConverterFeature({}),
-              //   ],
-              // }),
               editor: lexicalEditor({
                 features: ({ rootFeatures }) => {
                   return [
@@ -170,20 +174,17 @@ export const BlogCollection: CollectionConfig = {
                 },
               }),
             },
-            // lexicalHTML('content', { name: 'content_html' }),
           ],
         },
         {
-          label: 'Summary',
+          label: 'Description',
           fields: [
             {
-              name: 'summary',
+              name: 'description',
               type: 'textarea',
-              label: 'Summary',
               required: true,
               admin: {
-                placeholder: 'Enter a brief summary/excerpt for the post...',
-                description: 'A short summary or snippet of the post content',
+                position: 'sidebar',
               },
             },
           ],
@@ -217,19 +218,5 @@ export const BlogCollection: CollectionConfig = {
         },
       ],
     },
-    ...slugField(),
   ],
-  versions: {
-    drafts: {
-      autosave: {
-        interval: 100, // We set this interval for optimal live preview
-      },
-      schedulePublish: true,
-    },
-    maxPerDoc: 50,
-  },
-  hooks: {
-    afterChange: [revalidateBlog],
-    afterDelete: [revalidateDelete],
-  },
 }
